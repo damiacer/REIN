@@ -1,59 +1,75 @@
 getwd()
-
 setwd("P:/UBRC_M2/REYES/ANALYSIS/DATABASES/csv_data") # ON PC
 
-rein <- read.csv2("rein_db.csv", header = TRUE, na.string="")
-
 ################################################################################
+
+# PACKAGES
 
 library("tidyverse")
 library("dplyr")
 library("expss")
 
+################################################################################
+
+# SOURCES
+## DATA MANAGEMENT ON TIDYVERSE
+### https://stats.idre.ucla.edu/stat/data/rdm/data_management_seminar.html
+
+################################################################################
+
+# DATABASE 1: REGISTRE REIN
+rein <- read.csv2("rein_db.csv", header = TRUE, na.string="")
+count(rein)
+
+#-------------------------------------------------------------------------------
+
+# RENAME COLUMNS
 rein <- as_tibble(rein)
 rein <- rein %>% 
   rename(
-#new name = old name,
-"prttturg" = "ï..URGn",
+# new name = old name,
+"prttturg" = "Ã¯..URGn",
 )
 
+#-------------------------------------------------------------------------------
 
+# ADD LABELS TO VARIABLES
 rein = apply_labels(rein,
                     prttturg = "Premier traitement en urgence",
-                    KTTINIn = "1ère séance d'hémodialyse réalisée avec cathéter",
+                    KTTINIn = "1Ã¨re sÃ©ance d'hÃ©modialyse rÃ©alisÃ©e avec cathÃ©ter",
                     EPOINIn = "Traitement par Erythropoietine",
-                    liste_longue = "Regroupement détaillé néphropathie",
-                    nephgp = "Regroupement en 8 classes néphropathie",
+                    liste_longue = "Regroupement dÃ©taillÃ© nÃ©phropathie",
+                    nephgp = "Regroupement en 8 classes nÃ©phropathie",
                     METHOn = "Traitement 3 classes",
-                    techn = "Méthode de traitement",
-                    MODALn = "Modalité de traitement",
+                    techn = "MÃ©thode de traitement",
+                    MODALn = "ModalitÃ© de traitement",
                     VAVn = "Voie d'abord vasculaire",
-                    traitement = "Traitement (concaténation TECHN et MODAL)",
+                    traitement = "Traitement (concatÃ©nation TECHN et MODAL)",
                     PDS = "Poids",
                     TAIL = "Taille",
                     IRCn = "Insuffisance respiratoire chronique",          
-                    O2n = "Oxygénothérapie",   
+                    O2n = "OxygÃ©nothÃ©rapie",   
                     ICn = "Insuffisance cardiaque",
                     ICOROn = "Insuffisance coronarienne",
                     IDMn = "Infarctus du myocarde",
                     RYTHMn = "Troubles du rythme",
                     ANEVn = "Anevrysme de l'aorte abdominale",
-                    AMIn = "Artérite des membres inférieurs",
+                    AMIn = "ArtÃ©rite des membres infÃ©rieurs",
                     AVCAITn = "Variable composite de AVC et AIT",
-                    KCn = "Cancer évolutif",
+                    KCn = "Cancer Ã©volutif",
                     VHBn = "Ag HBS positif",
                     VHCn = "PCR VHC positif", 
                     CIRHn = "Cirrhose",
                     VIHn = "VIH",
                     SIDAn = "SIDA",
                     HANDn = "Au moins un handicap",
-                    AMPn = "Amputation membres inférieurs",
-                    PLEGn = "Paraplégie/Hémiplégie",
-                    CECITEn = "Cécité",
+                    AMPn = "Amputation membres infÃ©rieurs",
+                    PLEGn = "ParaplÃ©gie/HÃ©miplÃ©gie",
+                    CECITEn = "CÃ©citÃ©",
                     COMPORTn = "Troubles du comportement",
-                    TYPDIABn = "Type de diabète",
+                    TYPDIABn = "Type de diabÃ¨te",
                     STADICn = "Stade de l'insuffisance cardiaque",
-                    STDAMIn = "Stade de l'artérite des membres inférieurs",
+                    STDAMIn = "Stade de l'artÃ©rite des membres infÃ©rieurs",
                     STDCIRHn = "Stade de la cirrrhose",
                     TABACn = "Statut tabagique 0-1-2",
                     bmi = "IMC",
@@ -61,37 +77,48 @@ rein = apply_labels(rein,
                     iresp = "Variable composite de O2 et IRC",   
                     sero = "Variable composite de VIH et SIDA",
                     coro = "Variable composite de ICORO et IDM",
-                    foie = "Variable composite de CIRH, VHB, VHC",
-                    comCV = "Nb de comorbidités  cardiovasc sur 6 chez les patients avec TOUTES LES VAR RENSEIGNEES",
-                    comcvcl = "Au moins une comorbidité cardiovasculaire",
-                    comcvcl2 = "Nb de comorbidités cardiovasculaires en 3 classes sur 6 comorbidités",
+                    foie = "VariablSe composite de CIRH, VHB, VHC",
+                    comCV = "Nb de comorbiditÃ©s  cardiovasc sur 6 chez les patients avec TOUTES LES VAR RENSEIGNEES",
+                    comcvcl = "Au moins une comorbiditÃ© cardiovasculaire",
+                    comcvcl2 = "Nb de comorbiditÃ©s cardiovasculaires en 3 classes sur 6 comorbiditÃ©s",
                     sex = "Sexe",
-                    age = "Age à l'initiation du traitement de suppléance",    
-                    ETAT_DERNOUV2019 = "Etat aux dernières nouvelles avant 31/12/2019",
-                    delai_IRT = "Délai insuffisance rénale terminale",
-                    delai_DC = "Délai décès",
+                    age = "Age Ã  l'initiation du traitement de supplÃ©ance",    
+                    ETAT_DERNOUV2019 = "Etat aux derniÃ¨res nouvelles avant 31/12/2019",
+                    delai_IRT = "DÃ©lai insuffisance rÃ©nale terminale",
+                    delai_DC = "DÃ©lai dÃ©cÃ¨s",
                     delai_TX = "",
-                    delai_SVR = "Délai de sevrage (par récupération de la fonc rénale, soit en fin d vie)",     
-                    delai_PDV = "Délai de perdue de vue",       
-                    delai_DERNOUV2019 = "Délai dernières nouvelles 2019",
-                    groupes6 = "Regroupement causes de décès 6 groupes", 
-                    categories18 = "Regroupement causes de décès 18 groupes",
-                    groupes6_CA1 = "Regroupement causes de décès associée 1 en 6 groupes",
-                    categories18_CA1 = "Regroupement causes de décès associée 1 en 18 groupes",
-                    groupes6_CA2 = "Regroupement causes de décès associée 2 en 6 groupes",
-                    categories18_CA2 = "Regroupement causes de décès associée 2 en 18 groupes",
-                    MOTIF_An = "Motif d'arrêt de la dialyse",
-                    CPKMEDn = "Fin de traitement pour complication médicale",
+                    delai_SVR = "DÃ©lai de sevrage (par rÃ©cupÃ©ration de la fonc rÃ©nale, soit en fin d vie)",     
+                    delai_PDV = "DÃ©lai de perdue de vue",       
+                    delai_DERNOUV2019 = "DÃ©lai derniÃ¨res nouvelles 2019",
+                    groupes6 = "Regroupement causes de dÃ©cÃ¨s 6 groupes", 
+                    categories18 = "Regroupement causes de dÃ©cÃ¨s 18 groupes",
+                    groupes6_CA1 = "Regroupement causes de dÃ©cÃ¨s associÃ©e 1 en 6 groupes",
+                    categories18_CA1 = "Regroupement causes de dÃ©cÃ¨s associÃ©e 1 en 18 groupes",
+                    groupes6_CA2 = "Regroupement causes de dÃ©cÃ¨s associÃ©e 2 en 6 groupes",
+                    categories18_CA2 = "Regroupement causes de dÃ©cÃ¨s associÃ©e 2 en 18 groupes",
+                    MOTIF_An = "Motif d'arrÃªt de la dialyse",
+                    CPKMEDn = "Fin de traitement pour complication mÃ©dicale",
                     REFUSn = "Fin de traitement par refus du patient",
-                    DDC = "Date de décès",
-                    DINSCMED = "Date de la première inscription sur la liste transplantation",
-                    DDIRT = "Date de l'insuffisance rénale terminale",
+                    DDC = "Date de dÃ©cÃ¨s",
+                    DINSCMED = "Date de la premiÃ¨re inscription sur la liste transplantation",
+                    DDIRT = "Date de lâ€™insuffisance rÃ©nale terminale",
                     DGRF = "Date de greffe",          
-                    DSVR = "Date de sevrage (par récupération de la fonc rénale, soit en fin d vie)",
+                    DSVR = "Date de sevrage (par rÃ©cupÃ©ration de la fonc rÃ©nale, soit en fin d vie)",
                     DPDV = "Date de perdu de vue",
-                    DATE_DERNOUV2019 = "Date de dernières nouvelles 2019",
+                    DATE_DERNOUV2019 = "Date de derniÃ¨res nouvelles 2019",
                     RREC_COD_ANO = "Code anonym"
 )
 
+# RECALL LABELS (BY VAR NAME OR VAR POSITION)
 var_lab(rein[13])
+
+################################################################################
+
+# DATABASE 2: TREATMENT CHANGE DURING THE FOLLOW-UP
+switch <- read.csv2("rein_treatswitch.csv", header = TRUE, na.string="")
+count(switch)
+summary(switch)
+View(switch)
+
+library("here")
 
