@@ -144,7 +144,7 @@ sapply(switch2, class)
 sapply(switch2, mode)
 
 # all_dates <- factor(2:74) %>% print()
-# as.numeric(as.character(as.character(all_dates)))
+# as.numeric(as.character(all_dates))
 
 #-------------------------------------------------------------------------------
 
@@ -158,3 +158,7 @@ colsumfun <- function(df) {
 
 switch2$changes <- colsumfun(switch2)
 table(switch2$changes)
+
+#https://tidyr.tidyverse.org/reference/expand.html
+switch2$all_dates <- factor(2:43329) 
+switch2 %>% expand(all_dates)
