@@ -17,6 +17,7 @@ library("gapminder")
 ## DATA MANAGEMENT ON TIDYVERSE
 ### https://dplyr.tidyverse.org/reference/index.html
 ### https://stats.idre.ucla.edu/stat/data/rdm/data_management_seminar.html
+### https://stackoverflow.com/questions/28873057/sum-across-multiple-columns-with-dplyr
 
 ################################################################################
 
@@ -118,7 +119,7 @@ var_lab(rein[11])
 ################################################################################
 
 # DATABASE 2: TREATMENT CHANGE DURING THE FOLLOW-UP
-switch <- read.csv2("rein_treatswitch.csv", header = TRUE, na.string="")
+switch <- read.csv2("rein_treatswitch.csv", header = TRUE, na.string="NA")
 count(switch)
 
 switch <- switch %>% rename(
@@ -130,25 +131,30 @@ switch <- switch %>% rename(
 # switch$RREC_COD_ANO <- as.factor(switch$RREC_COD_ANO)
 
 switch <- as_tibble(switch)
-switch2 <- switch %>% pivot_wider(names_from = DDTT, values_from = tmethod, values_fn = list)
+switch2 <- switch %>% pivot_wider(names_from = DDTT, values_from = tmethod, 
+                                  values_fn = length,
+                                  # WARNING#1: VALUES ARE NOT UNIQUELY IDENTIFIER 
+                                  # WARNING#2 : OUTPUT WILL CONTAIN LIST-COL
+                                  # NOTE: VALUES_FN WILL ONLY SUPPRESS THE WARNING MESSAGE
+                                  # values_fn = list, 
+                                  values_fill = 0)
 count(switch2)
+ncol(switch2)
+sapply(switch2, class)
+sapply(switch2, mode)
 
-switch2 %>% 
-  select(ends_with(15)
-         #, ends_with(16), ends_with(17), ends_with(18), 
-         #ends_with(19), ends_with(20)
-         ) %>%
-  mutate(switching = ends_with(15))
-
-#-------------------------------------------------------------------------------
-
+# all_dates <- factor(2:74) %>% print()
+# as.numeric(as.character(as.character(all_dates)))
 
 #-------------------------------------------------------------------------------
 
 # CREATE A VARIABLE FOR THE TREATMENT CHANGE
-switch2 %>% select("12/1/2018") %>% mutate(across(!RREC_COD_ANO, as.numeric))
-ncol(switch2)
-for(col in 2:74){
-  
+
+colsumfun <- function(df) {
+                      require(dplyr)
+                      y <- select_if(df, is_numeric)
+                      rowSums(y, na.rm=T)
 }
 
+switch2$changes <- colsumfun(switch2)
+table(switch2$changes)
