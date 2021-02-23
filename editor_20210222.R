@@ -9,16 +9,20 @@ library("tidyverse")
 library("dplyr")
 library("expss")
 library("here")
+library("gapminder")
 
 ################################################################################
 
 # SOURCES
 ## DATA MANAGEMENT ON TIDYVERSE
+### https://dplyr.tidyverse.org/reference/index.html
 ### https://stats.idre.ucla.edu/stat/data/rdm/data_management_seminar.html
 
 ################################################################################
 
 # DATABASE 1: REGISTRE REIN
+## WARNING#1: DATABASE SAVED FROM SAS7DBAT. UFT-8 CODING NOT AVAILABLE.
+## WARNING#2: SPECIAL CHARACTERS ARE NOT CORRECTLY DISPLAYED.
 rein <- read.csv2("rein_db.csv", header = TRUE, na.string="")
 count(rein)
 
@@ -109,15 +113,13 @@ rein = apply_labels(rein,
 )
 
 # RECALL LABELS (BY VAR NAME OR VAR POSITION)
-var_lab(rein[13])
+var_lab(rein[11])
 
 ################################################################################
 
 # DATABASE 2: TREATMENT CHANGE DURING THE FOLLOW-UP
 switch <- read.csv2("rein_treatswitch.csv", header = TRUE, na.string="")
 count(switch)
-str(switch)
-names(switch)
 
 switch <- switch %>% rename(
     # new name = old name,
@@ -130,5 +132,23 @@ switch <- switch %>% rename(
 switch <- as_tibble(switch)
 switch2 <- switch %>% pivot_wider(names_from = DDTT, values_from = tmethod, values_fn = list)
 count(switch2)
-names(switch2)
+
+switch2 %>% 
+  select(ends_with(15)
+         #, ends_with(16), ends_with(17), ends_with(18), 
+         #ends_with(19), ends_with(20)
+         ) %>%
+  mutate(switching = ends_with(15))
+
+#-------------------------------------------------------------------------------
+
+
+#-------------------------------------------------------------------------------
+
+# CREATE A VARIABLE FOR THE TREATMENT CHANGE
+switch2 %>% select("12/1/2018") %>% mutate(across(!RREC_COD_ANO, as.numeric))
+ncol(switch2)
+for(col in 2:74){
+  
+}
 
