@@ -8,6 +8,7 @@ setwd("P:/UBRC_M2/REYES/ANALYSIS/DATABASES/csv_data") # ON PC
 library("tidyverse")
 library("dplyr")
 library("expss")
+library("here")
 
 ################################################################################
 
@@ -25,11 +26,9 @@ count(rein)
 
 # RENAME COLUMNS
 rein <- as_tibble(rein)
-rein <- rein %>% 
-  rename(
-# new name = old name,
-"prttturg" = "ï..URGn",
-)
+rein <- rein %>% rename(
+    # new name = old name,
+    "prttturg" = "ï..URGn")
 
 #-------------------------------------------------------------------------------
 
@@ -117,8 +116,19 @@ var_lab(rein[13])
 # DATABASE 2: TREATMENT CHANGE DURING THE FOLLOW-UP
 switch <- read.csv2("rein_treatswitch.csv", header = TRUE, na.string="")
 count(switch)
-summary(switch)
-View(switch)
+str(switch)
+names(switch)
 
-library("here")
+switch <- switch %>% rename(
+    # new name = old name,
+    "tmethod" = "ï..METHOn")
+
+# switch %>% select(tmethod, DDTT, RREC_COD_ANO) %>% mutate(across(!tmethod, as.factor))
+# switch$DDTT <- as.factor(switch$DDTT)
+# switch$RREC_COD_ANO <- as.factor(switch$RREC_COD_ANO)
+
+switch <- as_tibble(switch)
+switch2 <- switch %>% pivot_wider(names_from = DDTT, values_from = tmethod, values_fn = list)
+count(switch2)
+names(switch2)
 
