@@ -1,15 +1,6 @@
 getwd()
 setwd("P:/UBRC_M2/REYES/ANALYSIS/DATABASES/csv_data") # ON PC
-
-################################################################################
-
-# PACKAGES
-
-library("tidyverse")
-library("dplyr")
-library("expss")
-library("here")
-library("gapminder")
+setwd("/Users/damianocerasuolo/Desktop/PhD/M2/DATABASES_REIN/csv_data") # ON MAC
 
 ################################################################################
 
@@ -23,23 +14,26 @@ library("gapminder")
 
 # DATABASE 1: REGISTRE REIN
 ## WARNING#1: DATABASE SAVED FROM SAS7DBAT. UFT-8 CODING NOT AVAILABLE.
-## WARNING#2: SPECIAL CHARACTERS ARE NOT CORRECTLY DISPLAYED.
+## WARNING#2: SPECIAL CHARACTERS MAY NOT BE CORRECTLY DISPLAYED.
 rein <- read.csv2("rein_db.csv", header = TRUE, na.string="")
 count(rein)
+View(rein)
 
 #-------------------------------------------------------------------------------
 
 # RENAME COLUMNS
+# WARNING: THIS IS NOT NECESSARY ON MAC
 rein <- as_tibble(rein)
 rein <- rein %>% rename(
-    # new name = old name,
-    "prttturg" = "ï..URGn")
+  # new name = old name,
+  "prttturg" = "ï..URGn")
 
 #-------------------------------------------------------------------------------
 
 # ADD LABELS TO VARIABLES
 rein = apply_labels(rein,
-                    prttturg = "Premier traitement en urgence",
+                    URGn = "Premier traitement en urgence",
+                    # prttturg = "Premier traitement en urgence", WINDOWS
                     KTTINIn = "1ère séance d'hémodialyse réalisée avec cathéter",
                     EPOINIn = "Traitement par Erythropoietine",
                     liste_longue = "Regroupement détaillé néphropathie",
@@ -116,49 +110,3 @@ rein = apply_labels(rein,
 # RECALL LABELS (BY VAR NAME OR VAR POSITION)
 var_lab(rein[11])
 
-################################################################################
-
-# DATABASE 2: TREATMENT CHANGE DURING THE FOLLOW-UP
-switch <- read.csv2("rein_treatswitch.csv", header = TRUE, na.string="NA")
-count(switch)
-
-switch <- switch %>% rename(
-    # new name = old name,
-    "tmethod" = "ï..METHOn")
-
-# switch %>% select(tmethod, DDTT, RREC_COD_ANO) %>% mutate(across(!tmethod, as.factor))
-# switch$DDTT <- as.factor(switch$DDTT)
-# switch$RREC_COD_ANO <- as.factor(switch$RREC_COD_ANO)
-
-switch <- as_tibble(switch)
-switch2 <- switch %>% pivot_wider(names_from = DDTT, values_from = tmethod, 
-                                  values_fn = length,
-                                  # WARNING#1: VALUES ARE NOT UNIQUELY IDENTIFIER 
-                                  # WARNING#2 : OUTPUT WILL CONTAIN LIST-COL
-                                  # NOTE: VALUES_FN WILL ONLY SUPPRESS THE WARNING MESSAGE
-                                  # values_fn = list, 
-                                  values_fill = 0)
-count(switch2)
-ncol(switch2)
-sapply(switch2, class)
-sapply(switch2, mode)
-
-# all_dates <- factor(2:74) %>% print()
-# as.numeric(as.character(all_dates))
-
-#-------------------------------------------------------------------------------
-
-# CREATE A VARIABLE FOR THE TREATMENT CHANGE
-
-colsumfun <- function(df) {
-                      require(dplyr)
-                      y <- select_if(df, is_numeric)
-                      rowSums(y, na.rm=T)
-}
-
-switch2$changes <- colsumfun(switch2)
-table(switch2$changes)
-
-#https://tidyr.tidyverse.org/reference/expand.html
-switch2$all_dates <- factor(2:43329) 
-switch2 %>% expand(all_dates)
