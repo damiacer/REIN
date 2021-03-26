@@ -4,6 +4,21 @@ setwd("/Users/damianocerasuolo/Desktop/PhD/M2/DATABASES_REIN/csv_data") # ON MAC
 
 ################################################################################
 
+# PACKAGES
+
+#install.packages("tidyverse")
+library("tidyverse")
+#install.packages("dplyr")
+library("dplyr")
+#install.packages("expss")
+library("expss")
+#install.packages("here")
+library("here")
+#install.packages("gapminder")
+library("gapminder")
+
+################################################################################
+
 # DATABASE "REIN"
 rein <- read.csv2("rein_db.csv", header = TRUE, na.string="")
 count(rein)
