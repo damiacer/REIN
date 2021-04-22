@@ -20,7 +20,7 @@ library("gapminder")
 ################################################################################
 
 # DATABASE "REIN"
-rein <- read.csv2("rein_db.csv", header = TRUE, na.string="")
+rein <- read.csv2("rein_db.csv", header = TRUE, na.string="NA")
 count(rein)
 #View(rein)
 names(rein)
@@ -30,14 +30,14 @@ str(rein$RREC_COD_ANO)
 #-------------------------------------------------------------------------------
 
 # HOSPITALISATION DATABSE (SNDS)
-hosp <- read.csv2("snds_hospit.csv", header = TRUE, na.string="")
+hosp <- read.csv2("snds_hospit.csv", header = TRUE, na.string="NA")
 count(hosp)
 #View(hosp)
 
 #-------------------------------------------------------------------------------
 
 # TREATMENT DATA (SNDS)
-treat <- read.csv2("snds_medic.csv", header = TRUE, na.string="")
+treat <- read.csv2("snds_medic.csv", header = TRUE, na.string="NA")
 count(treat)
 #View(treat)
 
