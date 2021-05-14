@@ -15,7 +15,7 @@ setwd("/Users/damianocerasuolo/Desktop/PhD/M2/DATABASES_REIN/csv_data") # ON MAC
 # DATABASE 1: REGISTRE REIN
 ## WARNING#1: DATABASE SAVED FROM SAS7DBAT. UFT-8 CODING NOT AVAILABLE.
 ## WARNING#2: SPECIAL CHARACTERS MAY NOT BE CORRECTLY DISPLAYED.
-rein <- read.csv2("rein_db.csv", header = TRUE, na.string="NA")
+# rein <- read.csv2("rein_db.csv", header = TRUE, na.string="NA")
 count(rein)
 #View(rein)
 
@@ -32,7 +32,7 @@ rein <- rein %>% rename(
 
 # ADD LABELS TO VARIABLES
 rein = apply_labels(rein,
-                    # URGn = "Premier traitement en urgence", 
+                    URGn = "Premier traitement en urgence", #MAC
                     prttturg = "Premier traitement en urgence", #WINDOWS
                     KTTINIn = "1ère séance d'hémodialyse réalisée avec cathéter",
                     EPOINIn = "Traitement par Erythropoietine",
@@ -108,7 +108,7 @@ rein = apply_labels(rein,
 )
 
 # RECALL LABELS (BY VAR NAME OR VAR POSITION)
-var_lab(rein[12])
+var_lab(rein[1])
 
 # MERGING THE DATABASES 
 # THE FULL LIST OF DATABASES ARE UNDER DATALISTING
@@ -150,7 +150,6 @@ count(rein_m2)
 
 # THE VARIABLE DGN_PAL DEFINES THE DIAGNOSIS 
 # SOME SUBJECTS CAN HAVE MORE THAN ONE LINE SINCE THEY HAVE MORE THAN ONE EVENT 
-
 rein_m2$DGN_PALB[rein_m2$DGN_PAL==""] <- 0
 rein_m2$DGN_PALB[rein_m2$DGN_PAL!=""] <- 1
 table(rein_m2$DGN_PALB)
@@ -158,7 +157,7 @@ table(rein_m2$DGN_PALB, rein_m2$DGN_PAL)
 
     # TEST TO ELIMINATE THE DOUBLED LINES
     dgn_data <- rein_m2[,c("RREC_COD_ANO", "num_enq", "DGN_PAL", "DGN_PALB", "SOR_ANN", "SOR_MOI")]
-    View(dgn_data)
+    # View(dgn_data)
     names(dgn_data)
     count(dgn_data)
 
