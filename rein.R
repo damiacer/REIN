@@ -108,7 +108,7 @@ rein = apply_labels(rein,
 )
 
 # RECALL LABELS (BY VAR NAME OR VAR POSITION)
-var_lab(rein[1])
+var_lab(rein[12])
 
 # MERGING THE DATABASES 
 # THE FULL LIST OF DATABASES ARE UNDER DATALISTING
@@ -120,7 +120,7 @@ var_lab(rein[1])
 
 #RUN THE TIBBLE BEFORE
 names(rein)
-names(rein_s)
+names(rein_s) # "rein_s" is the "accrochage" database
 names(hosp) 
 
 # COUNT DATASETS
@@ -130,8 +130,11 @@ count(rein)
 count(rein_s)
 # A tibble: 1 x 1
 # 45026
+count(hosp)
+# 18543
 
 # MERGING "ACCROCHAGE" FOR SNDS AND REIN DATA
+# CHECK THE "accrochage.R" BEFORE LAUNCHING THIS MERGING ON WINDOWS
 rein_m1 <- merge(rein, rein_s, by.x = "RREC_COD_ANO", by.y = "RREC_COD_ANO")
 count(rein_m1)
 # 45026
@@ -143,10 +146,14 @@ is.data.table(rein_m1)
 # TO KEEP ONLY FULL CORRESPONDANCE USE THE FOLLOWING PROCEDURE
 count(hosp)
 
+# CHECK THE "hospdata.R" BEFORE LAUNCHING THIS MERGING ON WINDOWS
+
 rein_m2 <- merge(rein_m1, hosp, by.x = "num_enq", by.y = "num_enq",
                  all.x = TRUE, all.y = FALSE)
 count(rein_m2)
 # View(rein_m2)
+
+#-------------------------------------------------------------------------------
 
 # THE VARIABLE DGN_PAL DEFINES THE DIAGNOSIS 
 # SOME SUBJECTS CAN HAVE MORE THAN ONE LINE SINCE THEY HAVE MORE THAN ONE EVENT 
@@ -155,72 +162,152 @@ rein_m2$DGN_PALB[rein_m2$DGN_PAL!=""] <- 1
 table(rein_m2$DGN_PALB)
 table(rein_m2$DGN_PALB, rein_m2$DGN_PAL)
 
-    # TEST TO ELIMINATE THE DOUBLED LINES
-    dgn_data <- rein_m2[,c("RREC_COD_ANO", "num_enq", "DGN_PAL", "DGN_PALB", "SOR_ANN", "SOR_MOI")]
-    # View(dgn_data)
-    names(dgn_data)
-    count(dgn_data)
+# TEST TO ELIMINATE THE DOUBLED LINES
+dgn_data <- rein_m2[,c("RREC_COD_ANO", "num_enq", "DGN_PAL", "DGN_PALB", "SOR_ANN", "SOR_MOI")]
+# View(dgn_data)
+names(dgn_data)
+count(dgn_data)
 
-    # VARIABLE TO VERIFY THE EVENT 
-    table(dgn_data$DGN_PALB)
+# VARIABLE TO VERIFY THE EVENT 
+table(dgn_data$DGN_PALB)
 
-    # CREATE THE BASE WITH ONLY EVENTS 
-    dgn_complete = dgn_data[complete.cases(dgn_data[ , "DGN_PAL"]), ]
-    count(dgn_complete)
-    # 18543
-    
-    # CREATE A NEW VARIABLE FOR DATE
-    # THE CODE DOES NOT RECOGNIZE THE sep = "" COMMAND. DATE CANNOT BE AUTOMATICALLY CREATED
-    dgn_complete$eventdate <- as.numeric(paste(dgn_complete$SOR_ANN, dgn_complete$SOR_MOI, sep = ""))
-    table(dgn_complete$eventdate)
-    is.na(dgn_complete$eventdate)
-    # library(tidyverse)
-    # dgn_complete %>% unite("eventdate", "SOR_ANN","SOR_MOI", sep = "")
-    # table(dgn_complete$eventdate)
-    
-    # SORT DATA BEFORE ERASE DUPLICATES
-    sort(dgn_complete$eventdate, increasing = TRUE)
-    sort.int(dgn_complete$eventdate, decreasing = FALSE, index.return = TRUE)
-    
-    # DUPLICATE CAN BE IDENTIFIED BY "RREC_COD_ANO" OR "num_enq"
-    duplicated(dgn_complete$RREC_COD_ANO)
-    # FIND THE DUPLICATES
-    dgn_complete$RREC_COD_ANO[duplicated(dgn_complete$RREC_COD_ANO)]
-    # ERASE DUPLICATED LINES ACCORDING TO ONE VALUE 
-    dgn_one<-dgn_complete[!duplicated(dgn_complete$RREC_COD_ANO, fromLast = TRUE),]
-    count(dgn_one)
-    
-    dgn_dup = dgn_complete[duplicated(dgn_complete$RREC_COD_ANO),]
-    dgn_duptest = dgn_dup[c(1:250),]
-    count(dgn_dup)
-    dgn_onetest = dgn_one[c(1:250),]
-    # THE DOUBLE-LINE DATABASE IS ON THE X
-    # THE SINGLE-LINE DATABASE IS ON THE Y
-    table(dgn_duptest$SOR_ANN, dgn_onetest$SOR_ANN)
-    
+# CREATE THE BASE WITH ONLY EVENTS 
+dgn_complete = dgn_data[complete.cases(dgn_data[ , "DGN_PAL"]), ]
+count(dgn_complete)
+# 18543
+
+#-------------------------------------------------------------------------------
+
+table(dgn_complete$SOR_MOI)
+str(dgn_complete$SOR_MOI)
+
+dgn_complete$SOR_MOI[dgn_complete$SOR_MOI=="1"] <- "01"
+dgn_complete$SOR_MOI[dgn_complete$SOR_MOI=="2"] <- "02"
+dgn_complete$SOR_MOI[dgn_complete$SOR_MOI=="3"] <- "03"
+dgn_complete$SOR_MOI[dgn_complete$SOR_MOI=="4"] <- "04"
+dgn_complete$SOR_MOI[dgn_complete$SOR_MOI=="5"] <- "05"
+dgn_complete$SOR_MOI[dgn_complete$SOR_MOI=="6"] <- "06"
+dgn_complete$SOR_MOI[dgn_complete$SOR_MOI=="7"] <- "07"
+dgn_complete$SOR_MOI[dgn_complete$SOR_MOI=="8"] <- "08"
+dgn_complete$SOR_MOI[dgn_complete$SOR_MOI=="9"] <- "09"
+dgn_complete$SOR_MOI[dgn_complete$SOR_MOI=="10"] <- "10"
+dgn_complete$SOR_MOI[dgn_complete$SOR_MOI=="11"] <- "11"
+dgn_complete$SOR_MOI[dgn_complete$SOR_MOI=="12"] <- "12"
+
+#-------------------------------------------------------------------------------
+
+# CREATE A DAY FOR EVERY ENTRY IN THE DATABASE
+# EVERY ENTRY DAY WILL BE SET TO 15
+dgn_complete$SOR_JJ <- rep(15, times=18543)
+
+install.packages("lubridate")
+library("lubridate")
+# IF NECESSARY (WINDOWS): library(lubridate, warn.conflicts = FALSE)
+# MORE ON LUBRIDATE: https://lubridate.tidyverse.org/
+
+# CREATE A NEW VARIABLE FOR DATE
+# THE CODE DOES NOT RECOGNIZE THE sep = "" COMMAND. DATE CANNOT BE AUTOMATICALLY CREATEDdgn_complete$eventfulldate <- as.numeric(paste(dgn_complete$SOR_ANN, dgn_complete$SOR_MOI, dgn_complete$SOR_JJ, sep = ""))
+table(dgn_complete$eventfulldate)
+dgn_complete$evdate = ymd(dgn_complete$eventfulldate)
+str(dgn_complete$evdate)
+
+# is.na(dgn_complete$eventdate)
+# library(tidyverse)
+# dgn_complete %>% unite("eventdate", "SOR_ANN","SOR_MOI", sep = "")
+# table(dgn_complete$eventdate)
+
+#-------------------------------------------------------------------------------
+
+# SELECT FIRST OCCURRENCE BY TIME DATE
+# STACK: https://stackoverflow.com/questions/54525745/r-select-first-occurrence-by-time-date-for-multiple-ids
+# COMMENT: the following function does not actually create a new database selecting only one occurrence, but
+# it helps creating a new dataset with only select() variables and ordered by date.
+# the selection is run by dplyr after a counting variable is added to the dataset. 
+# the following step could be avoided, though ordering the data makes the upcoming steps run smoother
+
+dgn_one <- dgn_complete %>%
+  group_by(num_enq, lubridate::date(evdate)) %>%
+  arrange(evdate) %>%
+  slice(1) %>%
+  ungroup() %>%
+  select(evdate, num_enq, DGN_PAL)
+
+is.data.table(dgn_one)
+# View(dgn_one)
+
+# ADD A COUNT NUMBER FOR EACH EVENT FOR EACH SUBJECT
+# THE FOLLWING SQL FUNCTION WILL CREATE A NEW COULM CALLED "count"
+# THE NAME OF THE NEW COLUMN/VARIABLE CAN BE CHANGED IN THE SQL FUNCION
+
+install.packages("sqldf")
+library("sqldf")
+dgn_oneclassifier <- sqldf("SELECT a.*, COUNT(*) count
+       FROM dgn_one a, dgn_one b 
+       WHERE a.num_enq = b.num_enq AND b.ROWID <= a.ROWID 
+       GROUP BY a.ROWID"
+)
+
+is.data.table(dgn_oneclassifier)
+# View(dgn_oneclassifier)
+names(dgn_oneclassifier)
+count(dgn_oneclassifier)
+
+# NEW DATABASE WITH ONLY THE FIRST EVENT PER PERSON
+# THE "filter" FUNCTION REQUIRES dplyr OR tidyverse
+
+dgn_line = filter(dgn_oneclassifier, count == 1)
+count(dgn_line)
+
+#-------------------------------------------------------------------------------
+
+# SORT DATA BEFORE ERASE DUPLICATES
+# sort(dgn_complete$eventfulldate, increasing = TRUE)
+# sort.int(dgn_complete$eventdate, decreasing = FALSE, index.return = TRUE)
+
+# DUPLICATE CAN BE IDENTIFIED BY "RREC_COD_ANO" OR "num_enq"
+# duplicated(dgn_complete$RREC_COD_ANO)
+# FIND THE DUPLICATES
+# dgn_complete$RREC_COD_ANO[duplicated(dgn_complete$RREC_COD_ANO)]
+# ERASE DUPLICATED LINES ACCORDING TO ONE VALUE 
+# dgn_one<-dgn_complete[!duplicated(dgn_complete$RREC_COD_ANO, fromLast = TRUE),]
+# count(dgn_one)
+
+# dgn_dup = dgn_complete[duplicated(dgn_complete$RREC_COD_ANO),]
+# dgn_duptest = dgn_dup[c(1:250),]
+# count(dgn_dup)
+# dgn_onetest = dgn_one[c(1:250),]
+# THE DOUBLE-LINE DATABASE IS ON THE X
+# THE SINGLE-LINE DATABASE IS ON THE Y
+# table(dgn_duptest$SOR_ANN, dgn_onetest$SOR_ANN)
+
+################################################################################
+
+# FINAL DATABASE (REIN + HOSP) WITHOUT REPLICATION
+# n = 45 026
+
 # MERGE BASES WITH THE HOSPITALIZATION DATA 
 count(rein_m1)
-count(dgn_one)
-rein_mone <- merge(rein_m1, dgn_one, by.x = "num_enq", by.y = "num_enq",
-                     all.x = TRUE, all.y = FALSE)
+count(dgn_line)
+rein_mone <- merge(rein_m1, dgn_line, by.x = "num_enq", by.y = "num_enq",
+                   all.x = TRUE, all.y = FALSE)
 count(rein_mone)
 
 # NUMBER THE REPLICATED LINES
 # COMMENT: THIS IS NOT NECESSARY
 #library(dplyr)
-rein_m2c <- rein_m2 %>%
-  group_by(num_enq) %>%
-  mutate(replicate=seq(n))
+# rein_m2c <- rein_m2 %>%
+#  group_by(num_enq) %>%
+#  mutate(replicate=seq(n))
 
 # COUNT THE NUMBER OF DUPLICATED PATIENTS (LINES) IN THE DATASET
 # COMMENT: THIS FUNCTION USES THE data.table PACKAGE, WHICH IS NOT PROPERLY WORKING
 # ON MACBOOK BECAUSE OF THE "MP" COMPONENT
 #library(data.table)
-rein_m2d <- rein_m2
-setDT(rein_m2d)[, .N, id]
-sum(duplicated(rein_m2d$id))
+# rein_m2d <- rein_m2
+# setDT(rein_m2d)[, .N, id]
+# sum(duplicated(rein_m2d$id))
 
-#-------------------------------------------------------------------------------
+################################################################################
 
 # DATA ANALYSIS USING "rein_mone"
 # THIS DATABASE CONTAINS ALL DATA FROM ALL PATIENTS + THEIR HOSPITALISATION
@@ -261,9 +348,9 @@ m <- as.data.frame(apkd$DGN_PAL)
 m[is.na(m)] <- "E0"
 table(m)
 apkd$grouping <- m
-  apkd$grouping01[apkd$grouping == "E0"]  <- 0
-  apkd$grouping01[apkd$grouping != "E0"]  <- 1
-  apkd$grouping01 <- as.character(apkd$grouping01)
+apkd$grouping01[apkd$grouping == "E0"]  <- 0
+apkd$grouping01[apkd$grouping != "E0"]  <- 1
+apkd$grouping01 <- as.character(apkd$grouping01)
 
 # CREATE THE TABLEONE OBJECT
 CreateTableOne(data = apkd)  
@@ -281,15 +368,15 @@ variables = c("URGn", "KTTINIn", "EPOINIn",
               "categories18_CA2", "MOTIF_An", "CPKMEDn", "REFUSn", "SOR_ANN", "grouping01")
 
 categorical = c("URGn", "KTTINIn", "EPOINIn", 
-              "nephgp", "METHOn", "techn", "MODALn", "VAVn", 
-              "traitement", "IRCn", "O2n", "ICn", "ICOROn", 
-              "IDMn", "RYTHMn", "ANEVn", "AMIn", "AVCAITn", "KCn", "VHBn", 
-              "VHCn", "CIRHn", "VIHn", "SIDAn", "HANDn", "AMPn", "PLEGn", "CECITEn", 
-              "COMPORTn", "TYPDIABn", "STADICn", "STDAMIn", "STDCIRHn", "TABACn", 
-              "tabac2", "iresp", "sero", "coro", "foie", "comCV", "comcvcl", 
-              "comcvcl2", "sex", "groupes6", 
-              "categories18", "groupes6_CA1", "categories18_CA1", "groupes6_CA2", 
-              "categories18_CA2", "MOTIF_An", "CPKMEDn", "REFUSn", "SOR_ANN", "grouping01")
+                "nephgp", "METHOn", "techn", "MODALn", "VAVn", 
+                "traitement", "IRCn", "O2n", "ICn", "ICOROn", 
+                "IDMn", "RYTHMn", "ANEVn", "AMIn", "AVCAITn", "KCn", "VHBn", 
+                "VHCn", "CIRHn", "VIHn", "SIDAn", "HANDn", "AMPn", "PLEGn", "CECITEn", 
+                "COMPORTn", "TYPDIABn", "STADICn", "STDAMIn", "STDCIRHn", "TABACn", 
+                "tabac2", "iresp", "sero", "coro", "foie", "comCV", "comcvcl", 
+                "comcvcl2", "sex", "groupes6", 
+                "categories18", "groupes6_CA1", "categories18_CA1", "groupes6_CA2", 
+                "categories18_CA2", "MOTIF_An", "CPKMEDn", "REFUSn", "SOR_ANN", "grouping01")
 
 
 # CREATE THE DESCRIPTIVE TABLE
