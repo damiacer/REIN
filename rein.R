@@ -200,13 +200,14 @@ dgn_complete$SOR_MOI[dgn_complete$SOR_MOI=="12"] <- "12"
 # EVERY ENTRY DAY WILL BE SET TO 15
 dgn_complete$SOR_JJ <- rep(15, times=18543)
 
-install.packages("lubridate")
+#install.packages("lubridate")
 library("lubridate")
 # IF NECESSARY (WINDOWS): library(lubridate, warn.conflicts = FALSE)
 # MORE ON LUBRIDATE: https://lubridate.tidyverse.org/
 
 # CREATE A NEW VARIABLE FOR DATE
-# THE CODE DOES NOT RECOGNIZE THE sep = "" COMMAND. DATE CANNOT BE AUTOMATICALLY CREATEDdgn_complete$eventfulldate <- as.numeric(paste(dgn_complete$SOR_ANN, dgn_complete$SOR_MOI, dgn_complete$SOR_JJ, sep = ""))
+# THE CODE DOES NOT RECOGNIZE THE sep = "" COMMAND. DATE CANNOT BE AUTOMATICALLY CREATED
+dgn_complete$eventfulldate <- as.numeric(paste(dgn_complete$SOR_ANN, dgn_complete$SOR_MOI, dgn_complete$SOR_JJ, sep = ""))
 table(dgn_complete$eventfulldate)
 dgn_complete$evdate = ymd(dgn_complete$eventfulldate)
 str(dgn_complete$evdate)
@@ -350,6 +351,8 @@ table(m)
 apkd$grouping <- m
 apkd$grouping01[apkd$grouping == "E0"]  <- 0
 apkd$grouping01[apkd$grouping != "E0"]  <- 1
+tabev <- table(apkd$grouping01)
+prop.table(tabev)
 apkd$grouping01 <- as.character(apkd$grouping01)
 
 # CREATE THE TABLEONE OBJECT
@@ -387,3 +390,110 @@ print(tab1, showAllLevels = TRUE, quote = TRUE, nospaces = TRUE)
 tab2 = CreateTableOne(vars = variables, data = apkd, factorVars = categorical, test = TRUE,
                       strata = "grouping01")
 print(tab2, showAllLevels = TRUE, quote = TRUE, nospaces = TRUE)
+
+#-------------------------------------------------------------------------------
+
+# RECODE THE "apkd$DGN_PAL" VARIABLE  (DIAGNOSIS)
+
+apkd$DGN_PALs[apkd$DGN_PAL=="G450"] = "G45"
+apkd$DGN_PALs[apkd$DGN_PAL=="G451"] = "G45"  
+apkd$DGN_PALs[apkd$DGN_PAL=="G452"] = "G45"
+apkd$DGN_PALs[apkd$DGN_PAL=="G453"] = "G45"
+apkd$DGN_PALs[apkd$DGN_PAL=="G454"] = "G45"
+apkd$DGN_PALs[apkd$DGN_PAL=="G458"] = "G45"
+apkd$DGN_PALs[apkd$DGN_PAL=="G459"] = "G45"
+apkd$DGN_PALs[apkd$DGN_PAL=="G464"] = "G46"
+apkd$DGN_PALs[apkd$DGN_PAL=="G8101"] = "G46"
+apkd$DGN_PALs[apkd$DGN_PAL=="I601"] = "I60"
+apkd$DGN_PALs[apkd$DGN_PAL=="I602"] = "I60"
+apkd$DGN_PALs[apkd$DGN_PAL=="I605"] = "I60"
+apkd$DGN_PALs[apkd$DGN_PAL=="I607"] = "I60"
+apkd$DGN_PALs[apkd$DGN_PAL=="I608"] = "I60"
+apkd$DGN_PALs[apkd$DGN_PAL=="I609"] = "I60"
+apkd$DGN_PALs[apkd$DGN_PAL=="I610"] = "I61"
+apkd$DGN_PALs[apkd$DGN_PAL=="I611"] = "I61"
+apkd$DGN_PALs[apkd$DGN_PAL=="I612"] = "I61"
+apkd$DGN_PALs[apkd$DGN_PAL=="I615"] = "I61"
+apkd$DGN_PALs[apkd$DGN_PAL=="I616"] = "I61"
+apkd$DGN_PALs[apkd$DGN_PAL=="I618"] = "I61"
+apkd$DGN_PALs[apkd$DGN_PAL=="I619"] = "I61" 
+apkd$DGN_PALs[apkd$DGN_PAL=="I620"] = "I62"
+apkd$DGN_PALs[apkd$DGN_PAL=="I629"] = "I62"
+apkd$DGN_PALs[apkd$DGN_PAL=="I630"] = "I63"
+apkd$DGN_PALs[apkd$DGN_PAL=="I631"] = "I63"
+apkd$DGN_PALs[apkd$DGN_PAL=="I632"] = "I63"
+apkd$DGN_PALs[apkd$DGN_PAL=="I633"] = "I63"
+apkd$DGN_PALs[apkd$DGN_PAL=="I634"] = "I63"
+apkd$DGN_PALs[apkd$DGN_PAL=="I635"] = "I63"
+apkd$DGN_PALs[apkd$DGN_PAL=="I638"] = "I63"
+apkd$DGN_PALs[apkd$DGN_PAL=="I639"] = "I63"
+apkd$DGN_PALs[apkd$DGN_PAL=="I64"] = "I64" 
+apkd$DGN_PALs[apkd$DGN_PAL=="I742"] = "I74"
+apkd$DGN_PALs[apkd$DGN_PAL=="I743"] = "I74"
+apkd$DGN_PALs[apkd$DGN_PAL=="I744"] = "I74"
+apkd$DGN_PALs[apkd$DGN_PAL=="I745"] = "I74"
+apkd$DGN_PALs[apkd$DGN_PAL=="I748"] = "I74"
+apkd$DGN_PALs[apkd$DGN_PAL=="R4701"] = "R471"
+apkd$DGN_PALs[apkd$DGN_PAL=="R471"] = "R471"  
+
+DGN_PALSstab = table(apkd$DGN_PALs)
+prop.table(DGN_PALSstab)
+
+#-------------------------------------------------------------------------------
+
+install.packages("survival")
+library("survival")
+install.packages("survminer")
+library("survminer")
+
+apkd$event = as.numeric(as.character(apkd$grouping01))
+
+apkd$DATE_DERNOUV2019d = as.Date(apkd$DATE_DERNOUV2019, "%d/%m/%Y")
+apkd$DDIRTd = as.Date(apkd$DDIRT, "%d/%m/%Y")
+
+apkd$event = as.Date(apkd$event, "%d/%m/%Y")
+str(apkd$event)
+
+table(apkd$event, apkd$DATE_DERNOUV2019)
+
+apkd$fu = as.Date(apkd$DATE_DERNOUV2019, "%d/%m/%Y") - as.Date(apkd$DDIRT, "%d/%m/%Y")
+apkd$fu_n = as.numeric(as.character(apkd$fu))
+
+apkd$fue = as.Date(apkd$event, "%d/%m/%Y") - as.Date(apkd$DDIRT, "%d/%m/%Y")
+apkd$fue_n = as.numeric(as.character(apkd$fue))
+
+mean(apkd$fue_n, na.rm = TRUE)
+min(apkd$fu_n)
+max(apkd$fu_n)
+
+Surv(apkd$fu_n, apkd$event)
+
+
+apkd$evdate2 <- strptime(as.character(apkd$evdate), "%Y-%m-%d")
+apkd$eventdate <- format(apkd$evdate2, "%d/%m/%Y")
+
+f1 = survfit(Surv(apkd$fu_n, apkd$event) ~ 1)
+names(f1)
+plot(survfit(Surv(fu_n, event) ~ 1, data = apkd),
+     xlab = "Jours",
+     ylab = "Survie globale")
+
+#-------------------------------------------------------------------------------
+
+install.packages("rms")
+library("rms")
+f2 = npsurv(Surv(apkd$fu_n, apkd$event) ~ 1)
+rms::survplot(f2, fun = function(x){1-x})
+
+#-------------------------------------------------------------------------------
+
+install.packages("incidence")
+library("incidence")
+# SEE https://repidemicsconsortium.org/incidence
+
+i.7 = incidence(apkd$evdate, interval = 7)
+i.7
+plot(i.7)
+
+i.365 = incidence(apkd$evdate, interval = 365)
+plot(i.365)
