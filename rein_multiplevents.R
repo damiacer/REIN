@@ -163,8 +163,9 @@ table(rein_m2$DGN_PALB)
 table(rein_m2$DGN_PALB, rein_m2$DGN_PAL)
 
 # TEST TO ELIMINATE THE DOUBLED LINES
-dgn_data <- rein_m2[,c("RREC_COD_ANO", "num_enq", "DGN_PAL", "DGN_PALB", "SOR_ANN", "SOR_MOI")]
+# dgn_data <- rein_m2[,c("RREC_COD_ANO", "num_enq", "DGN_PAL", "DGN_PALB", "SOR_ANN", "SOR_MOI")]
 # View(dgn_data)
+dgn_data <- rein_m2
 names(dgn_data)
 count(dgn_data)
 
@@ -446,202 +447,44 @@ library("survival")
 install.packages("survminer")
 library("survminer")
 
-#-------------------------------------------------------------------------------
+apkd$event = as.numeric(as.character(apkd$grouping01))
 
-# GENERAL FUP
+apkd$DATE_DERNOUV2019d = as.Date(apkd$DATE_DERNOUV2019, "%d/%m/%Y")
+apkd$DDIRTd = as.Date(apkd$DDIRT, "%d/%m/%Y")
+
+apkd$event = as.Date(apkd$event, "%d/%m/%Y")
+str(apkd$event)
+
+table(apkd$event, apkd$DATE_DERNOUV2019)
+
 apkd$fu = as.Date(apkd$DATE_DERNOUV2019, "%d/%m/%Y") - as.Date(apkd$DDIRT, "%d/%m/%Y")
 apkd$fu_n = as.numeric(as.character(apkd$fu))
-mean(apkd$fu_n)
-max(apkd$fu_n)
+
+apkd$fue = as.Date(apkd$event, "%d/%m/%Y") - as.Date(apkd$DDIRT, "%d/%m/%Y")
+apkd$fue_n = as.numeric(as.character(apkd$fue))
+
+mean(apkd$fue_n, na.rm = TRUE)
 min(apkd$fu_n)
+max(apkd$fu_n)
 
-aggregate(fu_n ~ grouping01, apkd, mean)
-# OR
-tapply(apkd$fu_n, apkd$grouping01, mean)
+Surv(apkd$fu_n, apkd$event)
 
-# FUP UNTIL EVENT
-apkd_devent <- apkd[!(apkd$grouping01=="0"),] # GROUPING 0 MEANS NO EVENT
-count(apkd_devent)
 
-# FOLLOW UP TIME TO EVENT FOR ALL ADPK SUBJECTS
-# SOME EVENTS OCCUR BEFORE THE INCLUSION AND THE WHOLE FU IS THEN NEGATIVE 
-# TAKE IT INTO ACCOUNT WHEN CALCULATING THE FOLLOW UP
-str(apkd_devent$evdate)
-apkd_devent$fue = as.Date(apkd_devent$evdate, "%d/%m/%Y") - as.Date(apkd_devent$DDIRT, "%d/%m/%Y")
-table(apkd_devent$fue)
-apkd_devent$fue_n = as.numeric(as.character(apkd_devent$fue))
+apkd$evdate2 <- strptime(as.character(apkd$evdate), "%Y-%m-%d")
+apkd$eventdate <- format(apkd$evdate2, "%d/%m/%Y")
 
-# SOME EVENTS OCCUR BEFORE THE INCLUSION IN THE DATASET
-# THE FOLLOWING CODE IDENTIFIES THESE EVENTS
-
-apkd_devent$fue_before[apkd_devent$fue<0] <- "1" # EVENTS BEFORE INCLUSION: 171
-apkd_devent$fue_before[apkd_devent$fue>=0] <- "0" # EVENTS AFTER INCLUSION: 261
-table(apkd_devent$fue_before)
-
-# DATA WITH ONLY EVENTS OCCURED AFFET THE INCLUSION
-apkd_deventb <- apkd_devent[!(apkd_devent$fue_before=="1"),]
-
-apkd_deventb$fue_afterinc = 
-  as.Date(apkd_deventb$evdate, "%d/%m/%Y") - as.Date(apkd_deventb$DDIRT, "%d/%m/%Y")
-apkd_deventb$fue_afterincn = as.numeric(as.character(apkd_deventb$fue_afterinc))
-mean(apkd_deventb$fue_afterincn)
-# 586.4943
+f1 = survfit(Surv(apkd$fu_n, apkd$event) ~ 1)
+names(f1)
+plot(survfit(Surv(fu_n, event) ~ 1, data = apkd),
+     xlab = "Jours",
+     ylab = "Survie globale")
 
 #-------------------------------------------------------------------------------
 
-# FOLLOW UP FOR THE WHOLE POPULATION
-# THE FOLLOWING CODE RESUMES THE FOLLOW UP TIMES AS THEY SHOULD BE CALCULATED
-# apkd$followup[apkd_devent$fue>=0] = apkd_deventb$fue_n
-# apkd$followup[apkd_devent$fue<0] = apkd$fu_n
-# apdk$followup[apkd$grouping01=="0"] = apkd$fu_n
-
-a = as.Date(apkd$DATE_DERNOUV2019, "%d/%m/%Y") - as.Date(apkd$DDIRT, "%d/%m/%Y")
-b = as.Date(apkd$evdate, "%d/%m/%Y") - as.Date(apkd$DDIRT, "%d/%m/%Y")
-  a = as.numeric(as.character(a))
-  b = as.numeric(as.character(b))
-  
-# FOLLOW TIME FOR EVENT AND NO-EVENT SUBJECT 
-apkd$fup = ifelse(apkd$grouping01=="0", a, b)
-mean(apkd$fup)
-# 637.8563
-str(apkd$fup)
-
-apkd$fup_trackrec = ifelse(apkd$fup < 0, "1", "0") # 1 = EVENT BEFORE THE INCLUSION
-table(apkd$fup_trackrec)
-
-apkd$grouping01rec[apkd$grouping == "E0" | apkd$fup_trackrec == "1"] <- "0" # NO EVENT AFTER THE INCLUSION
-apkd$grouping01rec[apkd$grouping != "E0" & apkd$fup_trackrec == "0"] <- "1" # EVENT AFTER INCLUSION
-table(apkd$grouping01rec)
-
-# DEFINITVE FOLLOW UP TAKING INTO ACCOUNT THE EVENT BEFORE/AFTER THE INCLUSION OF THE SUBJECTS
-
-apkd$followup = ifelse(apkd$grouping01rec == "0", a, b)
-mean(apkd$followup)
-# 772.0238
-str(apkd$followup)
-
-################################################################################
-
-# TABLE ONE WITH ONLY INCIDENTS CASES
-# CREATE THE TABLEONE OBJECT
-library("tableone")
-CreateTableOne(data = apkd)  
-
-variablesREC = c("URGn", "KTTINIn", "EPOINIn", 
-                 "nephgp", "METHOn", "techn", "MODALn", "VAVn", 
-                 "traitement", "PDS", "TAIL", "IRCn", "O2n", "ICn", "ICOROn", 
-                 "IDMn", "RYTHMn", "ANEVn", "AMIn", "AVCAITn", "KCn", "VHBn", 
-                 "VHCn", "CIRHn", "VIHn", "SIDAn", "HANDn", "AMPn", "PLEGn", "CECITEn", 
-                 "COMPORTn", "TYPDIABn", "STADICn", "STDAMIn", "STDCIRHn", "TABACn", 
-                 "bmi", "tabac2", "iresp", "sero", "coro", "foie", "comCV", "comcvcl", 
-                 "comcvcl2", "sex", "age", "ETAT_DERNOUV2019", "delai_IRT", "delai_DC", 
-                 "delai_TX", "delai_SVR", "delai_PDV", "delai_DERNOUV2019", "groupes6", 
-                 "categories18", "groupes6_CA1", "categories18_CA1", "groupes6_CA2", 
-                 "categories18_CA2", "MOTIF_An", "CPKMEDn", "REFUSn", "grouping01rec")
-
-categoricalREC = c("URGn", "KTTINIn", "EPOINIn", 
-                   "nephgp", "METHOn", "techn", "MODALn", "VAVn", 
-                   "traitement", "IRCn", "O2n", "ICn", "ICOROn", 
-                   "IDMn", "RYTHMn", "ANEVn", "AMIn", "AVCAITn", "KCn", "VHBn", 
-                   "VHCn", "CIRHn", "VIHn", "SIDAn", "HANDn", "AMPn", "PLEGn", "CECITEn", 
-                   "COMPORTn", "TYPDIABn", "STADICn", "STDAMIn", "STDCIRHn", "TABACn", 
-                   "tabac2", "iresp", "sero", "coro", "foie", "comCV", "comcvcl", 
-                   "comcvcl2", "sex", "groupes6", 
-                   "categories18", "groupes6_CA1", "categories18_CA1", "groupes6_CA2", 
-                   "categories18_CA2", "MOTIF_An", "CPKMEDn", "REFUSn", "grouping01rec")
-
-
-# CREATE THE DESCRIPTIVE TABLE
-tab1REC = CreateTableOne(vars = variablesREC, data = apkd, factorVars = categoricalREC)
-print(tab1, showAllLevels = TRUE, quote = TRUE, nospaces = TRUE)
-
-# CREATE THE UNIVARIATE TABLE 
-tab2REC = CreateTableOne(vars = variablesREC, data = apkd, factorVars = categoricalREC, test = TRUE,
-                         strata = "grouping01rec")
-print(tab2REC, showAllLevels = TRUE, quote = TRUE, nospaces = TRUE)
-
-################################################################################                  
-
-# SURVIVAL
-# follow up: apkd$followup
-  str(apkd$followup)
-# event:
-  apkd$event = apkd$grouping01rec
-  str(apkd$grouping01rec)
-  apkd$grouping01rec = as.numeric(as.character(apkd$grouping01rec))
-  apkd$event[apkd$grouping01rec == 0] <- "1" # NO EVENT
-  apkd$event[apkd$grouping01rec == 1] <- "2" # EVENT
-  is.na(apkd$grouping01rec)
-  str(apkd$event)
-  apkd$event = as.numeric(as.character(apkd$event))
-
-f1 = survfit(Surv(apkd$followup, apkd$event) ~ 1)
-names(f1)
-plot(survfit(Surv(followup, event) ~ 1, data = apkd),
-     xlab = "Jours",
-     ylab = "%")
-
-# EMPTY COX
-
-coxph(Surv(apkd$followup, apkd$event) ~ 1)
-res.cox = coxph(Surv(apkd$followup, apkd$event) ~ 1)
-summary(res.cox)
-
-# UNIVARIATE MODELS
-
-time = apkd$followup
-status = apkd$event
-
-covariates <- c("METHOn", "PDS", "TAIL", "IRCn", "O2n", "ICn", "ICOROn", "IDMn", "RYTHMn", "ANEVn", "AMIn",
-                "AVCAITn", "KCn", "VHBn", "VHCn", "CIRHn", "VIHn", "SIDAn", "bmi", "tabac2")
-univ_formulas <- sapply(covariates,
-                        function(x) as.formula(paste('Surv(time, status)~', x)))
-
-univ_models <- lapply(univ_formulas, function(x){coxph(x, data = apkd)})
-
-# EXTRACT DATA
-univ_results <- lapply(univ_models,
-                       function(x){ 
-                         x <- summary(x)
-                         p.value<-signif(x$wald["pvalue"], digits=2)
-                         wald.test<-signif(x$wald["test"], digits=2)
-                         beta<-signif(x$coef[1], digits=2); #coeficient beta
-                         HR <-signif(x$coef[2], digits=2); #exp(beta)
-                         HR.confint.lower <- signif(x$conf.int[,"lower .95"], 2)
-                         HR.confint.upper <- signif(x$conf.int[,"upper .95"],2)
-                         HR <- paste0(HR, " (", 
-                                      HR.confint.lower, "-", HR.confint.upper, ")")
-                         res<-c(beta, HR, wald.test, p.value)
-                         names(res)<-c("beta", "HR (95% CI for HR)", "wald.test", 
-                                       "p.value")
-                         return(res)
-                         #return(exp(cbind(coef(x),confint(x))))
-                       })
-
-res <- t(as.data.frame(univ_results, check.names = FALSE))
-as.data.frame(res)
-
-# beta HR (95% CI for HR) wald.test p.value
-# METHOn    -0.63   0.53 (0.41-0.68)        25 6.4e-07
-# PDS     -0.0012         1 (0.99-1)      0.09    0.77
-# TAIL     0.0019         1 (0.99-1)      0.09    0.77
-# IRCn       0.09        1.1 (0.6-2)      0.08    0.77
-# O2n        0.26     1.3 (0.58-2.9)      0.39    0.53
-# ICn         0.3     1.4 (0.88-2.1)       1.9    0.16
-# ICOROn     0.64      1.9 (1.3-2.7)        12 0.00066
-# IDMn        0.4     1.5 (0.85-2.6)         2    0.16
-# RYTHMn     0.64      1.9 (1.3-2.7)        12 0.00067
-# ANEVn      0.45     1.6 (0.65-3.8)         1    0.32
-# AMIn       0.58      1.8 (1.1-2.8)       6.2   0.013
-# AVCAITn    0.54      1.7 (1.2-2.5)       7.9  0.0051
-# KCn        0.43     1.5 (0.86-2.7)       2.1    0.15
-# VHBn       -1.1   0.32 (0.12-0.86)       5.2   0.023
-# VHCn       0.57     1.8 (0.56-5.5)      0.96    0.33
-# CIRHn       -14    8.3e-07 (0-Inf)         0    0.99
-# VIHn      -0.51     0.6 (0.14-2.7)      0.45     0.5
-# SIDAn      0.31     1.4 (0.19-9.8)       0.1    0.76
-# bmi     -0.0029         1 (0.97-1)      0.05    0.83
-# tabac2     0.19     1.2 (0.92-1.6)       1.8    0.17
+install.packages("rms")
+library("rms")
+f2 = npsurv(Surv(apkd$fu_n, apkd$event) ~ 1)
+rms::survplot(f2, fun = function(x){1-x})
 
 #-------------------------------------------------------------------------------
 
@@ -655,45 +498,4 @@ plot(i.7)
 
 i.365 = incidence(apkd$evdate, interval = 365)
 plot(i.365)
-
-################################################################################
-
-install.packages(c("survival", "survminer"))
-install.packages("survival")
-install.packages("survminer")
-install.packages("casebase")
-library("survival")
-library("survminer")
-library("casebase")
-
-names(apkd)
-
-#-------------------------------------------------------------------------------
-
-# time = apkd$followup
-# status = apkd$event
-str(apkd$event)
-apkd$eventf = as.factor(apkd$event)
-str(apkd$followup)
-apkd$time = apkd$followup
-
-# rownames(apkd) <- make.names(apkd[,1], unique = TRUE)
-
-mod_cb_glm <- fitSmoothHazard(event ~ log(time) #+ 
-                                #VAR1 + 
-                                ,
-                              data = apkd,
-                              time = "time", ratio = 10)
-
-summary(mod_cb_glm)
-
-smooth_risk_apkd <- absoluteRisk(object = mod_cb_glm, 
-                                     newdata = apkd[c(1,50),])
-
-class(smooth_risk_apkd)
-plot(smooth_risk_apkd, 
-     id.names = c("Covariate Profile 1","Covariate Profile 50"), 
-     legend.title = "Type", 
-     xlab = "time (days)", 
-     ylab = "Cumulative Incidence (%)") 
 
