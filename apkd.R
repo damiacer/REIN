@@ -245,7 +245,7 @@ apkdnotr$grouping01rec[apkdnotr$grouping != "E0" & apkdnotr$fup_beforeinc == "0"
                   # EVENT AFTER INCLUSION
 table(apkdnotr$grouping01rec)
 
-# CREATE THE FOLLOW-UP FOR THE POPULATION NOT HAVING UNDERGONE THE DIALYSIS
+# CREATE THE FOLLOW-UP FOR THE POPULATION NOT HAVING UNDERGONE THE EVENT
 apkdnotr$notrfup_overallC = ifelse(apkdnotr$grouping01rec == "0", a, b)
 mean(apkdnotr$notrfup_overallC, na.rm = TRUE)
 min(apkdnotr$notrfup_overallC)
@@ -339,6 +339,56 @@ inc_apkd.dodici <- apkd %>%
 
 ################################################################################
 
+##########################################################################
+# TRANSFORM DATE BEFORE THE FIRST INCLUSION (1/1/2015) IN MISSING VALUES #
+##########################################################################
+
+library("dplyr")
+library("lubridate")
+
+apkd$DDIRT.date = as.Date(apkd$DDIRT, "%d/%m/%Y")
+
+hap.incid <- apkd %>% 
+  select(evdate, num_enq, RREC_COD_ANO, DDIRT.date) %>%
+  filter(evdate > DDIRT.date)
+is.data.frame(hap.incid)
+# View(hap.incid)
+# count(hap.incid) # 1 = event = 261
+# table(apkd$grouping01) # 1 (event) = 432
+
+# CREATE THE EVENT FROM THE EVENT DATE
+table(hap.incid$evdate)
+hap.incid$evdate01 = as.numeric(hap.incid$evdate)
+hap.incid$evdate01 = ifelse(hap.incid$evdate01 > 0, 1, 0) # 1=EVENT, 0=NO EVENT
+table(hap.incid$evdate01)
+
+apkd.dathap <- merge(apkd, hap.incid, by.x = "RREC_COD_ANO", by.y = "RREC_COD_ANO", 
+                all.x = TRUE, all.y = FALSE)
+# count(apkd.dathap) # 2560
+# count(apkd) # 2560
+
+# table(apkd.dathap$evdate.y) # VARIABLE DATE FOR EVENTS HAPPENING AFTER THE INCLUSION IN 2015
+apkd.dathap <- as_tibble(apkd.dathap)
+apkd.dathap <- apkd.dathap %>% rename(
+  # new name = old name,
+  "hapdate" = "evdate.y")
+
+################################################################################
+
+# CREATE THE NEW VARIABLE FOR DATE
+
+hap01 <- as.data.frame(apkd.dathap$evdate01)
+hap01[is.na(hap01)] <- "0"
+table(hap01)
+# hap01
+# 0    1 
+# 2299  261 == 2560
+
+apkd.dathap$EVENTUM = hap01[["apkd.dathap$evdate01"]]
+str(apkd.dathap$EVENTUM)
+
+################################################################################
+
 install.packages("incidence")
 library("incidence")
 # SEE https://repidemicsconsortium.org/incidence
@@ -348,33 +398,28 @@ library("incidence")
 # THE VARIABLE fup_trackrec CLASSES THE SUBJECTS AS
 # 2399 = INCIDENT EVENT 
 # 161 = PREVALENT EVENT
-apkd.incident <- apkd[!(apkd$fup_trackrec=="1"),]
+# apkd.incident <- apkd[!(apkd$fup_trackrec=="1"),]
 
 # INCIDENCE BY 7-DAY INTERVALS
-i.7 = incidence(apkd.incident$evdate, interval = 7)
-i.7ALL = incidence(apkd$evdate, interval = 7)
-
+i.7 = incidence(apkd.dathap$hapdate, interval = 7)
 i.7
 plot(i.7)
-plot(i.7ALL)
+
+# INCIDENCE BY MONTH INTERVALS
+i.3043 = incidence(apkd.dathap$hapdate, interval = 30.4375) #365.25/12
+plot(i.3043)
 
 # INCIDENCE BY YEAR-DAY INTERVALS
-i.365 = incidence(apkd.incident$evdate, interval = 365)
-i.365ALL = incidence(apkd$evdate, interval = 365)
-
+i.365 = incidence(apkd.dathap$hapdate, interval = 365)
 plot(i.365)
-plot(i.365ALL)
 
 #-------------------------------------------------------------------------------
 
 # FILTERING ACCORDING TO DATE
 
-library("dplyr")
-library("lubridate")
-
-duemilaquindici <- apkd.incident %>% 
-  select(evdate, num_enq, RREC_COD_ANO) %>%
-  filter(evdate > "2015-01-01")
+# duemilaquindici <- apkd.incident %>% 
+#  select(evdate, num_enq, RREC_COD_ANO) %>%
+#  filter(evdate > "2015-01-01")
 
 # is.data.frame(duemilaquindici)
 # sapply(duemilaquindici, class)
@@ -393,30 +438,30 @@ duemilaquindici <- apkd.incident %>%
 ## count(duemilaquindici)
   
 # THE FOLLOWING STEP ALLOWS TO ADD THE VARIABLE eve
-apkd15 <- merge(apkd.incident, duemilaquindici, by.x = "RREC_COD_ANO", by.y = "RREC_COD_ANO", 
-                all.x = TRUE, all.y = FALSE)
-count(apkd15)
-count(apkd)
-count(apkd.incident)
+# apkd15 <- merge(apkd.incident, duemilaquindici, by.x = "RREC_COD_ANO", by.y = "RREC_COD_ANO", 
+#                all.x = TRUE, all.y = FALSE)
+# count(apkd15)
+# count(apkd)
+# count(apkd.incident)
 
 # THE NEW VARIABLE evdate01 (AVAILABLE ONLY IN THE apkd15 DATASET)
 # ALLOWS TO SELECT ONLY EVENTS OCCURRING AFTER 2015
 
-table(apkd15$evdate.x) # ALL THE DATES
-table(apkd15$evdate.y) # DATES ONLY AFTER 2015
+# table(apkd15$evdate.x) # ALL THE DATES
+# table(apkd15$evdate.y) # DATES ONLY AFTER 2015
 
 # INCIDENCE BY 7-DAY INTERVALS
-i.7.2015 = incidence(apkd15$evdate.y, interval = 7)
-i.7.2015
-plot(i.7.2015)
+# i.7.2015 = incidence(apkd15$evdate.y, interval = 7)
+# i.7.2015
+# plot(i.7.2015)
 
 # INCIDENCE BY MONTH INTERVALS
-i.m.2015 = incidence(apkd15$evdate.y, interval = 30.4375) #365.25/12
-plot(i.m.2015)
+# i.m.2015 = incidence(apkd15$evdate.y, interval = 30.4375) #365.25/12
+# plot(i.m.2015)
 
 # INCIDENCE BY YEAR-DAY INTERVALS
-i.365.2015 = incidence(apkd15$evdate.y, interval = 365)
-plot(i.365.2015)
+# i.365.2015 = incidence(apkd15$evdate.y, interval = 365)
+# plot(i.365.2015)
 
 ################################################################################
 
@@ -429,13 +474,33 @@ apkd.cml = apkd[,c("cen", "y"), drop(FALSE)]
 apkd.cml$cen = as.numeric(as.character(apkd.cml$cen))
 res <- cci(apkd)
 
+#-------------------------------------------------------------------------------
+
 # SURVIVAL BY SURVIVAL FOR apkd.incident
 
 # USE THE DATASET "apkd.incident" TO INCLUDE ONLY EVENTS OCCURRED AFTER THE INCLUSION
 # apkd.incident <- apkd[!(apkd$fup_trackrec=="1"),]
 
-count(apkd)
-count(apkd.incident)
+### TIME
+apkd.dathap$time = apkd.dathap$glofup / (365.25/12)
+apkd.dathap$time = as.numeric(apkd.dathap$time)
+### STATUS
+apkd.dathap$status = as.factor(apkd.dathap$EVENTUM)
+str(apkd.dathap$status)
 
-mean(apkd$glofup)
-mean(apkd.incident$glofup)
+### KM
+KM = survfit(Surv(time, status) ~ 1, data = apkd.dathap)
+plot(KM)
+plot(KM, main = "Survival", lwd = 2, ylab = "Survival", 
+        xlab = "Time (months)", ylim = c(0,0.3)
+       #, xlim=c(0,10)
+        )
+
+library("ggfortify")
+
+autoplot(KM, surv.linetype = "dashed", surv.colour = "orange",
+        censor.colour = "red", conf.int = "TRUE", censor.shape = "*")
+
+library("survminer")
+
+ggsurvplot(KM, data = apkd.dathap, check.names = FALSE)
