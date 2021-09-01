@@ -286,3 +286,156 @@ median(apkd$glofup)
 # mean(apkd$followup)
 # 772.0238
 # str(apkd$followup)
+
+################################################################################
+
+#####################
+# SAVE THE DATABASE #
+#####################
+
+# more on saving and loading in R: 
+# https://www.r-bloggers.com/2019/05/how-to-save-and-load-datasets-in-r-an-overview/
+
+save(apkd, file = "apkd_fup.RData")
+write.table(apkd, file = "apkd_fup.csv", sep = "\t", row.names = F)
+
+################################################################################
+################################################################################
+################################################################################
+
+# STUDY THE INCIDENCE
+apkd$x = apkd$num_enq
+apkd$y = apkd$glofup/(355.25/12) #FUP IN MONTHS
+apkd$cen = apkd$grouping01
+
+
+# GGPLOT OF THE INCIDENCE
+# (COMMENT: IT IS ARTY ;))
+library("ggplot2")
+
+p <- ggplot(apkd, aes(x = x, y = y, color = cen)) +
+  geom_segment(aes(x = x, xend = x, y = 0, yend = y)) +
+  geom_point(color = ifelse(apkd$cen == "1", "orange", "blue"), size = ifelse(apkd$cen == "1", 5,2)) +
+  theme_bw() +
+  coord_flip() +
+  xlab("subject") +
+  scale_y_continuous(name = "FUP", breaks = seq(0, 24, 3), limits = c(0, 24)) +
+  ggtitle("Horizontal plot of follow-up time") +
+  labs(color = "Status")
+p
+
+# INCIDENCE CALCULATION
+
+# INCIDENCE / PERSON MONTH
+options(scipen = 1, digits = 2)
+inc_apkd <- sum(apkd$cen == "1") / sum(apkd$y)
+# 0.0065 / person month
+
+# INCIDENCE / PERSON MONT DURING THE FIRST 12 MONTHS
+options(scipen = 1, digits = 2)
+inc_apkd.dodici <- apkd %>%
+  filter(y<=12) %>%
+  summarise(n = n(), months = sum(y))
+
+################################################################################
+
+install.packages("incidence")
+library("incidence")
+# SEE https://repidemicsconsortium.org/incidence
+
+# CREATE THE APKD DATABASE INCLUDING ONLY THE PATIENTS HAVING HAD THE EVENT 
+# AFTER THE INCLUSION
+# THE VARIABLE fup_trackrec CLASSES THE SUBJECTS AS
+# 2399 = INCIDENT EVENT 
+# 161 = PREVALENT EVENT
+apkd.incident <- apkd[!(apkd$fup_trackrec=="1"),]
+
+# INCIDENCE BY 7-DAY INTERVALS
+i.7 = incidence(apkd.incident$evdate, interval = 7)
+i.7ALL = incidence(apkd$evdate, interval = 7)
+
+i.7
+plot(i.7)
+plot(i.7ALL)
+
+# INCIDENCE BY YEAR-DAY INTERVALS
+i.365 = incidence(apkd.incident$evdate, interval = 365)
+i.365ALL = incidence(apkd$evdate, interval = 365)
+
+plot(i.365)
+plot(i.365ALL)
+
+#-------------------------------------------------------------------------------
+
+# FILTERING ACCORDING TO DATE
+
+library("dplyr")
+library("lubridate")
+
+duemilaquindici <- apkd.incident %>% 
+  select(evdate, num_enq, RREC_COD_ANO) %>%
+  filter(evdate > "2015-01-01")
+
+# is.data.frame(duemilaquindici)
+# sapply(duemilaquindici, class)
+# count(duemilaquindici)
+# table(apkd.incident$grouping01)
+# str(duemilaquindici)
+
+# THE STEPS MARKED WITH "##" ARE NECESSARY ONLY IF WE WANT TO CREATE A 
+# BINARY VARIABLE IN THE NEW DATASET FOR EVENTS BEFORE/AFTER 2015
+## duemilaquindici$evdateN = as.numeric(duemilaquindici$evdate)
+## table(duemilaquindici$evdateN)
+# is.na(duemilaquindici$evdateN)
+# CREATE VARIABLE TO IDENTIFY ONLY EVENTS AFTER 2015
+## duemilaquindici$evdate01 = ifelse(duemilaquindici$evdateN > 0, 1, 0)
+## table(duemilaquindici$evdate01)
+## count(duemilaquindici)
+  
+# THE FOLLOWING STEP ALLOWS TO ADD THE VARIABLE eve
+apkd15 <- merge(apkd.incident, duemilaquindici, by.x = "RREC_COD_ANO", by.y = "RREC_COD_ANO", 
+                all.x = TRUE, all.y = FALSE)
+count(apkd15)
+count(apkd)
+count(apkd.incident)
+
+# THE NEW VARIABLE evdate01 (AVAILABLE ONLY IN THE apkd15 DATASET)
+# ALLOWS TO SELECT ONLY EVENTS OCCURRING AFTER 2015
+
+table(apkd15$evdate.x) # ALL THE DATES
+table(apkd15$evdate.y) # DATES ONLY AFTER 2015
+
+# INCIDENCE BY 7-DAY INTERVALS
+i.7.2015 = incidence(apkd15$evdate.y, interval = 7)
+i.7.2015
+plot(i.7.2015)
+
+# INCIDENCE BY MONTH INTERVALS
+i.m.2015 = incidence(apkd15$evdate.y, interval = 30.4375) #365.25/12
+plot(i.m.2015)
+
+# INCIDENCE BY YEAR-DAY INTERVALS
+i.365.2015 = incidence(apkd15$evdate.y, interval = 365)
+plot(i.365.2015)
+
+################################################################################
+
+# CURRENT SURVIVAL
+
+install.packages("currentSurvival")
+library("currentSurvival")
+
+apkd.cml = apkd[,c("cen", "y"), drop(FALSE)]
+apkd.cml$cen = as.numeric(as.character(apkd.cml$cen))
+res <- cci(apkd)
+
+# SURVIVAL BY SURVIVAL FOR apkd.incident
+
+# USE THE DATASET "apkd.incident" TO INCLUDE ONLY EVENTS OCCURRED AFTER THE INCLUSION
+# apkd.incident <- apkd[!(apkd$fup_trackrec=="1"),]
+
+count(apkd)
+count(apkd.incident)
+
+mean(apkd$glofup)
+mean(apkd.incident$glofup)
