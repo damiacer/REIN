@@ -349,6 +349,20 @@ inc_apkd.dodici <- apkd %>%
   filter(y<=12) %>%
   summarise(n = n(), months = sum(y))
 
+# INCIDENCE / PERSON MONTH
+options(scipen = 1, digits = 2)
+inc_apkd.dathap <- sum(apkd.dathap$cen == "1") / sum(apkd.dathap$y)
+# 0.004 / person month
+
+# INCIDENCE / PERSON MONT DURING THE FIRST 12 MONTHS
+options(scipen = 1, digits = 2)
+inc_apkd..dathap12 <- apkd.dathap %>%
+  filter(y<=12) %>%
+  summarise(n = n(), months = sum(y))
+# n months
+#     <int>  <dbl>
+#  1   639  4844.
+
 ################################################################################
 
 ##########################################################################
