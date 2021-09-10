@@ -145,6 +145,7 @@ rein_m2$DGN_PALB[rein_m2$DGN_PAL==""] <- "0"
 rein_m2$DGN_PALB[rein_m2$DGN_PAL!=""] <- "1"
 table(rein_m2$DGN_PALB)
 table(rein_m2$DGN_PALB, rein_m2$DGN_PAL)
+#is.na(rein_m2$DGN_PALB)
 
 # TEST TO ELIMINATE THE DOUBLED LINES
 # dgn_data <- rein_m2[,c("RREC_COD_ANO", "num_enq", "DGN_PAL", "DGN_PALB", "SOR_ANN", "SOR_MOI")]
@@ -283,6 +284,7 @@ count(dgn_line)
 rein_mone <- merge(rein_m1, dgn_line, by.x = "num_enq", by.y = "num_enq",
                    all.x = TRUE, all.y = FALSE)
 count(rein_mone)
+# 45026
 
 # NUMBER THE REPLICATED LINES
 # COMMENT: THIS IS NOT NECESSARY
@@ -351,6 +353,7 @@ apkd$EVENT[apkd$grouping != "E0"]  <- 1
 tabev <- table(apkd$EVENT)
 prop.table(tabev)
 apkd$EVENT <- as.character(apkd$EVENT)
+str(apkd$EVENT)
 
 #-------------------------------------------------------------------------------
 
@@ -468,3 +471,63 @@ table(random$DGRF.d, random$DGRF)
 # 2018-01-12 0        0        0         0         0         0
 # 2019-01-01 0        0        1         0         0         0
 # 2019-01-02 0        0        0         0         0         0
+
+# FOLLOW-UP 
+# START : INCLUSION
+# END
+### DATE DERNIERES NOUVELLES OR 31-12-2019
+### EVENT
+### TRANSPLANTATION
+### DECES
+
+# RECALL THAT THE DATE VARIABLES FOR THE FOLLOW-UP ARE NAMED
+### DDC = "Date de décès"
+### DINSCMED = "Date de la première inscription sur la liste transplantation"
+### DDIRT = "Date de l'insuffisance rénale terminale"
+### DGRF = "Date de greffe"
+### DSVR = "Date de sevrage (par récupération de la fonc rénale, soit en fin d vie)"
+### DPDV = "Date de perdu de vue"
+### DATE_DERNOUV2019 = "Date de dernières nouvelles 2019"
+
+fup.a = as.Date(random$DATE_DERNOUV2019, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")  #LAST FOLLOW-UP
+fup.b = as.Date(random$DGRF, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")              #GREFFE
+fup.c = as.Date(random$evdate, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")            #EVENT
+fup.d = as.Date(random$DDC, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")               #DEATH
+
+# STEP 1: EXCLUSION OF THE EVENT WITH A NEGATIVE FOLLOW UP 
+# THIS EVENTS OCCUR BEFORE THE INCLUSION OF THE PATIENT
+str(fup.c)
+fup.cp = ifelse(fup.c < 0, "", fup.c)
+fup.cp
+table(fup.c, fup.cp)
+
+# STEP 2: COMPARE THE LAST FOLLOW UP WITH DEATH 
+require("magrittr")
+require("dplyr")
+
+random$DDC.d = as.Date(random$DDC, "%d/%m/%Y")
+random$DDC.n = as.numeric(random$DDC.d)
+random$DATE_DERNOUV2019.d = as.Date(random$DATE_DERNOUV2019, "%d/%m/%Y")
+random$DATE_DERNOUV2019.n = as.numeric(random$DATE_DERNOUV2019.d)
+
+death.is.lastfup <- random %>%
+  mutate("de.last" = ifelse(DDC.n == DATE_DERNOUV2019.n, "True", "False"))
+is.data.frame(death.is.lastfup)
+names(death.is.lastfup)
+table(death.is.lastfup$de.last)
+table(random$DDC.d)
+# CONCLUSION: in the random database the date of the last follow-up always 
+# coincides with the date of the death
+
+# STEP 3: TRANSPLATNATION TIME
+
+fup.cpn = as.numeric(as.character(fup.cp))
+transp.bef.event = ifelse(fup.b < fup.cpn, 1, 0) # FOLLOW UP TRANSPL < FOLLOW UP EVENT (EVENT OCCURS BEFORE)
+table(transp.bef.event)
+
+followup.transp = ifelse(transp.bef.event == "1", fup.b, fup.a) 
+
+# STEP 4: THE WHOLE FOLLOW UP
+# 4.1: GREFFE
+
+followup.g = ifelse()
