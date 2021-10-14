@@ -404,6 +404,54 @@ DGN_PALSstab = table(apkd$DGN_PALs)
 prop.table(DGN_PALSstab)
 
 ################################################################################
+
+# TRANSFORM DATE BEFORE THE FIRST INCLUSION (1/1/2015) IN MISSING VALUES 
+
+library("dplyr")
+library("lubridate")
+
+apkd$DDIRT.date = as.Date(apkd$DDIRT, "%d/%m/%Y")
+
+hap.incid <- apkd %>% 
+  select(evdate, num_enq, RREC_COD_ANO, DDIRT.date) %>%
+  filter(evdate > DDIRT.date)
+is.data.frame(hap.incid)
+# View(hap.incid)
+# count(hap.incid) # 1 = event = 261
+# table(apkd$grouping01) # 1 (event) = 432
+
+# CREATE THE EVENT FROM THE EVENT DATE
+table(hap.incid$evdate)
+hap.incid$evdate01 = as.numeric(hap.incid$evdate)
+hap.incid$evdate01 = ifelse(hap.incid$evdate01 > 0, 1, 0) # 1=EVENT, 0=NO EVENT
+table(hap.incid$evdate01)
+
+apkd.dathap <- merge(apkd, hap.incid, by.x = "RREC_COD_ANO", by.y = "RREC_COD_ANO", 
+                all.x = TRUE, all.y = FALSE)
+# count(apkd.dathap) # 2560
+# count(apkd) # 2560
+
+# table(apkd.dathap$evdate.y) # VARIABLE DATE FOR EVENTS HAPPENING AFTER THE INCLUSION IN 2015
+apkd.dathap <- as_tibble(apkd.dathap)
+apkd.dathap <- apkd.dathap %>% rename(
+  # new name = old name,
+  "hapdate" = "evdate.y")
+
+################################################################################
+
+# CREATE THE NEW VARIABLE FOR DATE
+
+hap01 <- as.data.frame(apkd.dathap$evdate01)
+hap01[is.na(hap01)] <- "0"
+table(hap01)
+# hap01
+# 0    1 
+# 2299  261 == 2560
+
+apkd.dathap$EVENTUM = hap01[["apkd.dathap$evdate01"]]
+str(apkd.dathap$EVENTUM)
+
+################################################################################
 ################################################################################
 ################################################################################
 
@@ -418,11 +466,14 @@ prop.table(DGN_PALSstab)
 # DPDV = "Date de perdu de vue"
 # DATE_DERNOUV2019 = "Date de dernières nouvelles 2019"
 
-dput(names(apkd))
+dput(names(apkd.dathap))
 
-small <- apkd[,c("num_enq", "RREC_COD_ANO",  "DDC", "DINSCMED",
+small <- apkd.dathap[,c("num_enq", "RREC_COD_ANO",  "DDC", "DINSCMED",
                  "DDIRT", "DGRF", "DSVR", "DPDV", "DATE_DERNOUV2019", 
-                 "evdate", "DGN_PAL", "EVENT", "DGN_PALs")]
+                 "evdate", "DGN_PAL", "EVENTUM", "DGN_PALs")]
+
+# VARIABLES THAT CHANGED WITH THE PREVIOUS VERSION
+  # EVENT -> EVENTUM
 
 # SAMPLE RANDOM LINE
 library(dplyr)
