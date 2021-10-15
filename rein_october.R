@@ -9,7 +9,7 @@ names(rein)
 rein <- as_tibble(rein)
 rein <- rein %>% rename(
   # new name = old name,
-  "prttturg" = "ï..URGn")
+  "prttturg" = "Ã¯..URGn")
 
 #-------------------------------------------------------------------------------
 
@@ -17,40 +17,40 @@ rein <- rein %>% rename(
 rein = apply_labels(rein,
                     URGn = "Premier traitement en urgence", #MAC
                     prttturg = "Premier traitement en urgence", #WINDOWS
-                    KTTINIn = "1ère séance d'hémodialyse réalisée avec cathéter",
+                    KTTINIn = "1Ã¨re sÃ©ance d'hÃ©modialyse rÃ©alisÃ©e avec cathÃ©ter",
                     EPOINIn = "Traitement par Erythropoietine",
-                    liste_longue = "Regroupement détaillé néphropathie",
-                    nephgp = "Regroupement en 8 classes néphropathie",
+                    liste_longue = "Regroupement dÃ©taillÃ© nÃ©phropathie",
+                    nephgp = "Regroupement en 8 classes nÃ©phropathie",
                     METHOn = "Traitement 3 classes",
-                    techn = "Méthode de traitement",
-                    MODALn = "Modalité de traitement",
+                    techn = "MÃ©thode de traitement",
+                    MODALn = "ModalitÃ© de traitement",
                     VAVn = "Voie d'abord vasculaire",
-                    traitement = "Traitement (concaténation TECHN et MODAL)",
+                    traitement = "Traitement (concatÃ©nation TECHN et MODAL)",
                     PDS = "Poids",
                     TAIL = "Taille",
                     IRCn = "Insuffisance respiratoire chronique",          
-                    O2n = "Oxygénothérapie",   
+                    O2n = "OxygÃ©nothÃ©rapie",   
                     ICn = "Insuffisance cardiaque",
                     ICOROn = "Insuffisance coronarienne",
                     IDMn = "Infarctus du myocarde",
                     RYTHMn = "Troubles du rythme",
                     ANEVn = "Anevrysme de l'aorte abdominale",
-                    AMIn = "Artérite des membres inférieurs",
+                    AMIn = "ArtÃ©rite des membres infÃ©rieurs",
                     AVCAITn = "Variable composite de AVC et AIT",
-                    KCn = "Cancer évolutif",
+                    KCn = "Cancer Ã©volutif",
                     VHBn = "Ag HBS positif",
                     VHCn = "PCR VHC positif", 
                     CIRHn = "Cirrhose",
                     VIHn = "VIH",
                     SIDAn = "SIDA",
                     HANDn = "Au moins un handicap",
-                    AMPn = "Amputation membres inférieurs",
-                    PLEGn = "Paraplégie/Hémiplégie",
-                    CECITEn = "Cécité",
+                    AMPn = "Amputation membres infÃ©rieurs",
+                    PLEGn = "ParaplÃ©gie/HÃ©miplÃ©gie",
+                    CECITEn = "CÃ©citÃ©",
                     COMPORTn = "Troubles du comportement",
-                    TYPDIABn = "Type de diabète",
+                    TYPDIABn = "Type de diabÃ¨te",
                     STADICn = "Stade de l'insuffisance cardiaque",
-                    STDAMIn = "Stade de l'artérite des membres inférieurs",
+                    STDAMIn = "Stade de l'artÃ©rite des membres infÃ©rieurs",
                     STDCIRHn = "Stade de la cirrrhose",
                     TABACn = "Statut tabagique 0-1-2",
                     bmi = "IMC",
@@ -59,34 +59,34 @@ rein = apply_labels(rein,
                     sero = "Variable composite de VIH et SIDA",
                     coro = "Variable composite de ICORO et IDM",
                     foie = "VariablSe composite de CIRH, VHB, VHC",
-                    comCV = "Nb de comorbidités  cardiovasc sur 6 chez les patients avec TOUTES LES VAR RENSEIGNEES",
-                    comcvcl = "Au moins une comorbidité cardiovasculaire",
-                    comcvcl2 = "Nb de comorbidités cardiovasculaires en 3 classes sur 6 comorbidités",
+                    comCV = "Nb de comorbiditÃ©s  cardiovasc sur 6 chez les patients avec TOUTES LES VAR RENSEIGNEES",
+                    comcvcl = "Au moins une comorbiditÃ© cardiovasculaire",
+                    comcvcl2 = "Nb de comorbiditÃ©s cardiovasculaires en 3 classes sur 6 comorbiditÃ©s",
                     sex = "Sexe",
-                    age = "Age à l'initiation du traitement de suppléance",    
-                    ETAT_DERNOUV2019 = "Etat aux dernières nouvelles avant 31/12/2019",
-                    delai_IRT = "Délai insuffisance rénale terminale",
-                    delai_DC = "Délai décès",
+                    age = "Age Ã  l'initiation du traitement de supplÃ©ance",    
+                    ETAT_DERNOUV2019 = "Etat aux derniÃ¨res nouvelles avant 31/12/2019",
+                    delai_IRT = "DÃ©lai insuffisance rÃ©nale terminale",
+                    delai_DC = "DÃ©lai dÃ©cÃ¨s",
                     delai_TX = "",
-                    delai_SVR = "Délai de sevrage (par récupération de la fonc rénale, soit en fin d vie)",     
-                    delai_PDV = "Délai de perdue de vue",       
-                    delai_DERNOUV2019 = "Délai dernières nouvelles 2019",
-                    groupes6 = "Regroupement causes de décès 6 groupes", 
-                    categories18 = "Regroupement causes de décès 18 groupes",
-                    groupes6_CA1 = "Regroupement causes de décès associée 1 en 6 groupes",
-                    categories18_CA1 = "Regroupement causes de décès associée 1 en 18 groupes",
-                    groupes6_CA2 = "Regroupement causes de décès associée 2 en 6 groupes",
-                    categories18_CA2 = "Regroupement causes de décès associée 2 en 18 groupes",
-                    MOTIF_An = "Motif d'arrêt de la dialyse",
-                    CPKMEDn = "Fin de traitement pour complication médicale",
+                    delai_SVR = "DÃ©lai de sevrage (par rÃ©cupÃ©ration de la fonc rÃ©nale, soit en fin d vie)",     
+                    delai_PDV = "DÃ©lai de perdue de vue",       
+                    delai_DERNOUV2019 = "DÃ©lai derniÃ¨res nouvelles 2019",
+                    groupes6 = "Regroupement causes de dÃ©cÃ¨s 6 groupes", 
+                    categories18 = "Regroupement causes de dÃ©cÃ¨s 18 groupes",
+                    groupes6_CA1 = "Regroupement causes de dÃ©cÃ¨s associÃ©e 1 en 6 groupes",
+                    categories18_CA1 = "Regroupement causes de dÃ©cÃ¨s associÃ©e 1 en 18 groupes",
+                    groupes6_CA2 = "Regroupement causes de dÃ©cÃ¨s associÃ©e 2 en 6 groupes",
+                    categories18_CA2 = "Regroupement causes de dÃ©cÃ¨s associÃ©e 2 en 18 groupes",
+                    MOTIF_An = "Motif d'arrÃªt de la dialyse",
+                    CPKMEDn = "Fin de traitement pour complication mÃ©dicale",
                     REFUSn = "Fin de traitement par refus du patient",
-                    DDC = "Date de décès",
-                    DINSCMED = "Date de la première inscription sur la liste transplantation",
-                    DDIRT = "Date de l'insuffisance rénale terminale",
+                    DDC = "Date de dÃ©cÃ¨s",
+                    DINSCMED = "Date de la premiÃ¨re inscription sur la liste transplantation",
+                    DDIRT = "Date de l'insuffisance rÃ©nale terminale",
                     DGRF = "Date de greffe",          
-                    DSVR = "Date de sevrage (par récupération de la fonc rénale, soit en fin d vie)",
+                    DSVR = "Date de sevrage (par rÃ©cupÃ©ration de la fonc rÃ©nale, soit en fin d vie)",
                     DPDV = "Date de perdu de vue",
-                    DATE_DERNOUV2019 = "Date de dernières nouvelles 2019",
+                    DATE_DERNOUV2019 = "Date de derniÃ¨res nouvelles 2019",
                     RREC_COD_ANO = "Code anonym"
 )
 
@@ -129,7 +129,7 @@ is.data.table(rein_m1)
     rein_m1 <- as_tibble(rein_m1)
     rein_m1 <- rein_m1 %>% rename(
       # new name = old name,
-      "num_enq" = "ï..num_enq")
+      "num_enq" = "Ã¯..num_enq")
 
 # MERGING REIN_M1 WITH HOSPITALISATION DATA (MORE LINES PER SUBJECT)
 # THIS PROCESS USES THE "id" TO MERGE DATABASES 
@@ -141,7 +141,7 @@ count(hosp)
     hosp <- as_tibble(hosp)
     hosp <- hosp %>% rename(
       # new name = old name,
-      "num_enq" = "ï..num_enq")
+      "num_enq" = "Ã¯..num_enq")
 
 # CHECK THE "hospdata.R" BEFORE LAUNCHING THIS MERGING ON WINDOWS
 
@@ -328,8 +328,8 @@ table(rein_mone$nephgp)
 
 rein_mone$apkd01[rein_mone$nephgp=="APKD"] <- "1"
 rein_mone$apkd01[rein_mone$nephgp=="autre"] <- "0"
-  rein_mone$apkd01[rein_mone$nephgp=="diabète"] <- "0"
-  rein_mone$apkd01[rein_mone$nephgp=="diabÃ¨te"] <- "0" #ON PC
+  rein_mone$apkd01[rein_mone$nephgp=="diabÃ¨te"] <- "0"
+  rein_mone$apkd01[rein_mone$nephgp=="diabÃƒÂ¨te"] <- "0" #ON PC
 rein_mone$apkd01[rein_mone$nephgp=="gnc"] <- "0"
 rein_mone$apkd01[rein_mone$nephgp=="HTA"] <- "0"
 rein_mone$apkd01[rein_mone$nephgp=="Inconnu"] <- "0"
@@ -424,49 +424,103 @@ prop.table(DGN_PALSstab)
 
 # TRANSFORM DATE BEFORE THE FIRST INCLUSION (1/1/2015) IN MISSING VALUES 
 
-library("dplyr")
-library("lubridate")
-
-apkd$DDIRT.date = as.Date(apkd$DDIRT, "%d/%m/%Y")
-
-hap.incid <- apkd %>% 
-  select(evdate, num_enq, RREC_COD_ANO, DDIRT.date) %>%
-  filter(evdate > DDIRT.date)
-is.data.frame(hap.incid)
-# View(hap.incid)
-# count(hap.incid) # 1 = event = 261
-# table(apkd$grouping01) # 1 (event) = 432
-
-# CREATE THE EVENT FROM THE EVENT DATE
-table(hap.incid$evdate)
-hap.incid$evdate01 = as.numeric(hap.incid$evdate)
-hap.incid$evdate01 = ifelse(hap.incid$evdate01 > 0, 1, 0) # 1=EVENT, 0=NO EVENT
-table(hap.incid$evdate01)
-
-apkd.dathap <- merge(apkd, hap.incid, by.x = "RREC_COD_ANO", by.y = "RREC_COD_ANO", 
-                     all.x = TRUE, all.y = FALSE)
-# count(apkd.dathap) # 2560
-# count(apkd) # 2560
-
-# table(apkd.dathap$evdate.y) # VARIABLE DATE FOR EVENTS HAPPENING AFTER THE INCLUSION IN 2015
-apkd.dathap <- as_tibble(apkd.dathap)
-apkd.dathap <- apkd.dathap %>% rename(
-  # new name = old name,
-  "hapdate" = "evdate.y")
+  library("dplyr")
+  library("lubridate")
+  
+  apkd$DDIRT.date = as.Date(apkd$DDIRT, "%d/%m/%Y")
+  
+  hap.incid <- apkd %>% 
+    select(evdate, num_enq, RREC_COD_ANO, DDIRT.date) %>%
+    filter(evdate > DDIRT.date)
+  is.data.frame(hap.incid)
+  # View(hap.incid)
+  # count(hap.incid) # 1 = event = 261
+  # table(apkd$grouping01) # 1 (event) = 432
+  
+  # CREATE THE EVENT FROM THE EVENT DATE
+  table(hap.incid$evdate)
+  hap.incid$evdate01 = as.numeric(hap.incid$evdate)
+  hap.incid$evdate01 = ifelse(hap.incid$evdate01 > 0, 1, 0) # 1=EVENT, 0=NO EVENT
+  table(hap.incid$evdate01)
+  
+  apkd.dathap <- merge(apkd, hap.incid, by.x = "RREC_COD_ANO", by.y = "RREC_COD_ANO", 
+                       all.x = TRUE, all.y = FALSE)
+  # count(apkd.dathap) # 2560
+  # count(apkd) # 2560
+  
+  # table(apkd.dathap$evdate.y) # VARIABLE DATE FOR EVENTS HAPPENING AFTER THE INCLUSION IN 2015
+  apkd.dathap <- as_tibble(apkd.dathap)
+  apkd.dathap <- apkd.dathap %>% rename(
+    # new name = old name,
+    "hapdate" = "evdate.y")
+  
+  ################################################################################
+  
+  # CREATE THE NEW VARIABLE FOR DATE
+  
+  hap01 <- as.data.frame(apkd.dathap$evdate01)
+  hap01[is.na(hap01)] <- "0"
+  table(hap01)
+  # hap01
+  # 0    1 
+  # 2299  261 == 2560
+  
+  apkd.dathap$EVENTUM = hap01[["apkd.dathap$evdate01"]]
+  str(apkd.dathap$EVENTUM)
 
 ################################################################################
+  
+  ################################################################################
+  # CHECK
+  ################################################################################
 
-# CREATE THE NEW VARIABLE FOR DATE
+# TRANFORM THE EVENT AFTER THE TRANSPLANTATION AS MISSING EVENT
 
-hap01 <- as.data.frame(apkd.dathap$evdate01)
-hap01[is.na(hap01)] <- "0"
-table(hap01)
-# hap01
-# 0    1 
-# 2299  261 == 2560
-
-apkd.dathap$EVENTUM = hap01[["apkd.dathap$evdate01"]]
-str(apkd.dathap$EVENTUM)
+    apkd.dathap$hapdate.date = as.Date(apkd.dathap$hapdate, "%d/%m/%Y")
+    apkd.dathap$DGRF.date = as.Date(apkd.dathap$DGRF, "%d/%m/%Y")
+    
+    hap.incidt <- apkd.dathap %>% 
+      select(evdate.x, num_enq.x, RREC_COD_ANO, DDIRT.date, DGRF.date, hapdate.date) %>%
+      filter(DGRF.date > hapdate.date)
+    is.data.frame(hap.incidt)
+    # View(hap.incidt)
+    # count(hap.incidt) # 
+    
+    # CREATE THE EVENT FROM THE EVENT DATE
+    table(hap.incidt$DGRF.date)
+    hap.incidt$DGRF01 = as.numeric(hap.incidt$DGRF.date)
+    hap.incidt$DGRF01 = ifelse(hap.incidt$DGRF01 > 0, 1, 0) # 1=TRANSPL, 0=NO TRANSPL
+    table(hap.incidt$DGRF01) # 1 = 895
+    
+    apkd.dathapt <- merge(hap.incid, hap.incidt, by.x = "RREC_COD_ANO", by.y = "RREC_COD_ANO", 
+                         all.x = TRUE, all.y = FALSE)
+    # count(apkd.dathap) # 2560
+    # count(apkd) # 2560
+      count(apkd.dathapt) # 261
+    
+    # table(apkd.dathap$evdate.y) # VARIABLE DATE FOR EVENTS HAPPENING AFTER THE INCLUSION IN 2015
+    apkd.dathapt <- as_tibble(apkd.dathapt)
+    apkd.dathapt <- apkd.dathapt %>% rename(
+      # new name = old name,
+      "hapdate" = "evdate")
+    
+################################################################################
+    
+    # CREATE THE NEW VARIABLE FOR DATE
+    
+    DGRF01 <- as.data.frame(hap.incidt$DGRF01)
+    DGRF01[is.na(DGRF01)] <- "0"
+    table(DGRF01)
+    # hap01
+    # 0    1 
+    # 2299  261 == 2560
+    
+    apkd.dathap$EVENTUM = hap01[["apkd.dathap$evdate01"]]
+    str(apkd.dathap$EVENTUM)
+    
+  ################################################################################
+  # CHECK OFF
+  ################################################################################
 
 ################################################################################
 ################################################################################
@@ -475,13 +529,13 @@ str(apkd.dathap$EVENTUM)
 # SIMPLIFIED DATASET TO CREATE THE FOLLOW-UP VARIABLE
 
 # DATE VARIABLES FOR THE FOLLOW-UP
-# DDC = "Date de décès"
-# DINSCMED = "Date de la première inscription sur la liste transplantation"
-# DDIRT = "Date de l'insuffisance rénale terminale"
+# DDC = "Date de dÃ©cÃ¨s"
+# DINSCMED = "Date de la premiÃ¨re inscription sur la liste transplantation"
+# DDIRT = "Date de l'insuffisance rÃ©nale terminale"
 # DGRF = "Date de greffe"
-# DSVR = "Date de sevrage (par récupération de la fonc rénale, soit en fin d vie)"
+# DSVR = "Date de sevrage (par rÃ©cupÃ©ration de la fonc rÃ©nale, soit en fin d vie)"
 # DPDV = "Date de perdu de vue"
-# DATE_DERNOUV2019 = "Date de dernières nouvelles 2019"
+# DATE_DERNOUV2019 = "Date de derniÃ¨res nouvelles 2019"
 
 dput(names(apkd.dathap))
 
@@ -549,18 +603,23 @@ table(random$DGRF.d, random$DGRF)
 ### DECES
 
 # RECALL THAT THE DATE VARIABLES FOR THE FOLLOW-UP ARE NAMED
-### DDC = "Date de décès"
-### DINSCMED = "Date de la première inscription sur la liste transplantation"
-### DDIRT = "Date de l'insuffisance rénale terminale"
+### DDC = "Date de dÃ©cÃ¨s"
+### DINSCMED = "Date de la premiÃ¨re inscription sur la liste transplantation"
+### DDIRT = "Date de l'insuffisance rÃ©nale terminale"
 ### DGRF = "Date de greffe"
-### DSVR = "Date de sevrage (par récupération de la fonc rénale, soit en fin d vie)"
+### DSVR = "Date de sevrage (par rÃ©cupÃ©ration de la fonc rÃ©nale, soit en fin d vie)"
 ### DPDV = "Date de perdu de vue"
-### DATE_DERNOUV2019 = "Date de dernières nouvelles 2019"
+### DATE_DERNOUV2019 = "Date de derniÃ¨res nouvelles 2019"
 
 fup.a = as.Date(random$DATE_DERNOUV2019, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")  #LAST FOLLOW-UP
 fup.b = as.Date(random$DGRF, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")              #GREFFE
-fup.c = as.Date(random$evdate, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")            #EVENT
+fup.c = as.Date(random$hapdate, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")           #EVENT
 fup.d = as.Date(random$DDC, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")               #DEATH
+
+################################################################################
+
+
+fup.1 = ifelse(tran.bef.event01 == 1, fup.b, fup.a)
 
 ################################################################################
 
