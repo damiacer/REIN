@@ -328,8 +328,8 @@ table(rein_mone$nephgp)
 
 rein_mone$apkd01[rein_mone$nephgp=="APKD"] <- "1"
 rein_mone$apkd01[rein_mone$nephgp=="autre"] <- "0"
-  rein_mone$apkd01[rein_mone$nephgp=="diabète"] <- "0"
-  rein_mone$apkd01[rein_mone$nephgp=="diabÃ¨te"] <- "0" #ON PC
+  rein_mone$apkd01[rein_mone$nephgp=="diabète"] <- "0"  #MACBOOK
+  rein_mone$apkd01[rein_mone$nephgp=="diabÃ¨te"] <- "0" #PC
 rein_mone$apkd01[rein_mone$nephgp=="gnc"] <- "0"
 rein_mone$apkd01[rein_mone$nephgp=="HTA"] <- "0"
 rein_mone$apkd01[rein_mone$nephgp=="Inconnu"] <- "0"
@@ -351,6 +351,13 @@ count(apkd)
 
 # save(apkd, file = "apkd.RData")
 # write.table(apkd, file = "apkd.csv", sep = ",", row.names = F)
+
+# SAVE A .csv FILE WITH TIDYVERSE
+
+install.packages("reader")
+library("reader")
+
+write_csv2(apkd, "P:/UBRC_M2/REYES/ANALYSIS/DATABASES/csv_data/apkd_reader.csv")
 
 ################################################################################
 ################################################################################
@@ -424,103 +431,95 @@ prop.table(DGN_PALSstab)
 
 # TRANSFORM DATE BEFORE THE FIRST INCLUSION (1/1/2015) IN MISSING VALUES 
 
-  library("dplyr")
-  library("lubridate")
-  
-  apkd$DDIRT.date = as.Date(apkd$DDIRT, "%d/%m/%Y")
-  
-  hap.incid <- apkd %>% 
-    select(evdate, num_enq, RREC_COD_ANO, DDIRT.date) %>%
-    filter(evdate > DDIRT.date)
-  is.data.frame(hap.incid)
-  # View(hap.incid)
-  # count(hap.incid) # 1 = event = 261
-  # table(apkd$grouping01) # 1 (event) = 432
-  
-  # CREATE THE EVENT FROM THE EVENT DATE
-  table(hap.incid$evdate)
-  hap.incid$evdate01 = as.numeric(hap.incid$evdate)
-  hap.incid$evdate01 = ifelse(hap.incid$evdate01 > 0, 1, 0) # 1=EVENT, 0=NO EVENT
-  table(hap.incid$evdate01)
-  
-  apkd.dathap <- merge(apkd, hap.incid, by.x = "RREC_COD_ANO", by.y = "RREC_COD_ANO", 
-                       all.x = TRUE, all.y = FALSE)
-  # count(apkd.dathap) # 2560
-  # count(apkd) # 2560
-  
-  # table(apkd.dathap$evdate.y) # VARIABLE DATE FOR EVENTS HAPPENING AFTER THE INCLUSION IN 2015
-  apkd.dathap <- as_tibble(apkd.dathap)
-  apkd.dathap <- apkd.dathap %>% rename(
-    # new name = old name,
-    "hapdate" = "evdate.y")
-  
-  ################################################################################
-  
-  # CREATE THE NEW VARIABLE FOR DATE
-  
-  hap01 <- as.data.frame(apkd.dathap$evdate01)
-  hap01[is.na(hap01)] <- "0"
-  table(hap01)
-  # hap01
-  # 0    1 
-  # 2299  261 == 2560
-  
-  apkd.dathap$EVENTUM = hap01[["apkd.dathap$evdate01"]]
-  str(apkd.dathap$EVENTUM)
+library("dplyr")
+library("lubridate")
 
-################################################################################
-  
-  ################################################################################
-  # CHECK
-  ################################################################################
+apkd$inclusion.d = as.Date(apkd$DDIRT, "%d/%m/%Y")
+apkd$transplantation.d = as.Date(apkd$DGRF, "%d/%m/%Y")
+apkd$event.d = as.Date(apkd$evdate, "%d/%m/%Y")
 
-# TRANFORM THE EVENT AFTER THE TRANSPLANTATION AS MISSING EVENT
+#-------------------------------------------------------------------------------
 
-    apkd.dathap$hapdate.date = as.Date(apkd.dathap$hapdate, "%d/%m/%Y")
-    apkd.dathap$DGRF.date = as.Date(apkd.dathap$DGRF, "%d/%m/%Y")
-    
-    hap.incidt <- apkd.dathap %>% 
-      select(evdate.x, num_enq.x, RREC_COD_ANO, DDIRT.date, DGRF.date, hapdate.date) %>%
-      filter(DGRF.date > hapdate.date)
-    is.data.frame(hap.incidt)
-    # View(hap.incidt)
-    # count(hap.incidt) # 
-    
-    # CREATE THE EVENT FROM THE EVENT DATE
-    table(hap.incidt$DGRF.date)
-    hap.incidt$DGRF01 = as.numeric(hap.incidt$DGRF.date)
-    hap.incidt$DGRF01 = ifelse(hap.incidt$DGRF01 > 0, 1, 0) # 1=TRANSPL, 0=NO TRANSPL
-    table(hap.incidt$DGRF01) # 1 = 895
-    
-    apkd.dathapt <- merge(hap.incid, hap.incidt, by.x = "RREC_COD_ANO", by.y = "RREC_COD_ANO", 
-                         all.x = TRUE, all.y = FALSE)
-    # count(apkd.dathap) # 2560
-    # count(apkd) # 2560
-      count(apkd.dathapt) # 261
-    
-    # table(apkd.dathap$evdate.y) # VARIABLE DATE FOR EVENTS HAPPENING AFTER THE INCLUSION IN 2015
-    apkd.dathapt <- as_tibble(apkd.dathapt)
-    apkd.dathapt <- apkd.dathapt %>% rename(
-      # new name = old name,
-      "hapdate" = "evdate")
-    
-################################################################################
-    
-    # CREATE THE NEW VARIABLE FOR DATE
-    
-    DGRF01 <- as.data.frame(hap.incidt$DGRF01)
-    DGRF01[is.na(DGRF01)] <- "0"
-    table(DGRF01)
-    # hap01
-    # 0    1 
-    # 2299  261 == 2560
-    
-    apkd.dathap$EVENTUM = hap01[["apkd.dathap$evdate01"]]
-    str(apkd.dathap$EVENTUM)
-    
-  ################################################################################
-  # CHECK OFF
-  ################################################################################
+# FILTER EVENTS AFTER INCLUSION
+hap.data1 <- apkd %>% 
+  select(event.d, num_enq, RREC_COD_ANO, inclusion.d, transplantation.d) %>%
+  filter(event.d > inclusion.d)
+is.data.frame(hap.data1)
+count(hap.data1) # n=261 
+# THIS DATASET CONTAINS ONLY SUBJECTS UNDERGOING THE 
+# EVENT AFTER THE INCLUSION
+
+#-------------------------------------------------------------------------------
+
+# FILTER TRANSPLANTATION AFTER EVENT
+hap.data2 <- apkd %>%
+  select(event.d, num_enq, RREC_COD_ANO, inclusion.d, transplantation.d) %>%
+  filter(transplantation.d > event.d)
+is.data.frame(hap.data2)
+count(hap.data2) # n=107
+# THIS DATASET CONTAINS ONLY SUBJECTS UNDERGOING THE 
+# TRANSPLANTATION AFTER THE EVENT
+
+#-------------------------------------------------------------------------------
+
+# CREATE THE EVENT FROM THE EVENT DATE
+table(hap.data1$event.d)
+hap.data1$event01 = as.numeric(hap.data1$event.d)
+hap.data1$event01 = ifelse(hap.data1$event01 > 0, 1, 0) # 1=EVENT AFTER THE INCLUSION, 0=NO EVENT
+table(hap.data1$event01)
+
+
+# CREATE THE TRANSPLANTATION FROM TRANSPLANTATION DATE
+table(hap.data2$transplantation.d)
+hap.data2$transplantation01 = as.numeric(hap.data2$transplantation.d)
+hap.data2$transplantation01 = ifelse(hap.data2$transplantation01 > 0, 1, 0) 
+#1 = TRANSPLANTATION AFTER EVENT
+#0 = TRANSPLANTATION BEFORE EVENT
+#1 == 107
+table(hap.data2$transplantation01)
+
+#-------------------------------------------------------------------------------
+
+# BASES
+count(apkd) # n=2560
+
+# 1 EVENTS
+APKD1 = merge(apkd, hap.data1, by.x = "RREC_COD_ANO", by.y = "RREC_COD_ANO",
+              all.x = TRUE, all.y = FALSE)
+count(APKD1) # n=2560
+
+APKD2 = merge(APKD1, hap.data2, by.x = "RREC_COD_ANO", by.y = "RREC_COD_ANO",
+              all.x = TRUE, all.y = FALSE)
+count(APKD2) # n=2560
+
+names(APKD2)
+
+APKD.names = subset(APKD2, select = -c(num_enq.x, num_enq.y, 
+                                       transplantation.d.x, transplantation.d.y, 
+                                       event.d.x, event.d.y, 
+                                       inclusion.d.x, inclusion.d.y))
+
+names(APKD.names)
+
+#-------------------------------------------------------------------------------
+
+# NEW VARIABLES 
+
+eventinclusion <- as.data.frame(APKD.names$event01)
+eventinclusion[is.na(eventinclusion)] <- "0"
+table(eventinclusion)
+
+# eventinclusion
+# 0    1 
+# 2299  261 == 2560
+
+eventtransp <- as.data.frame(APKD.names$transplantation01)
+eventtransp[is.na(eventtransp)] <- "0"
+table(eventtransp)
+
+# eventtransp
+# 0    1 
+# 2453  107 
 
 ################################################################################
 ################################################################################
@@ -537,11 +536,12 @@ prop.table(DGN_PALSstab)
 # DPDV = "Date de perdu de vue"
 # DATE_DERNOUV2019 = "Date de dernières nouvelles 2019"
 
-dput(names(apkd.dathap))
+dput(names(APKD.names))
 
-small <- apkd.dathap[,c("num_enq.x", "RREC_COD_ANO",  "DDC", "DINSCMED",
-                        "DDIRT", "DGRF", "DSVR", "DPDV", "DATE_DERNOUV2019", 
-                        "hapdate", "DGN_PAL", "EVENTUM", "DGN_PALs")]
+small <- APKD.names[,c("num_enq", "RREC_COD_ANO", "DDC",
+                       "eventtransp","DDIRT", "DGRF", "DSVR", "DPDV",
+                       "DATE_DERNOUV2019","DGN_PAL", "eventinclusion",
+                       "DGN_PALs")]
 
 # VARIABLES THAT CHANGED WITH THE PREVIOUS VERSION
 # EVENT -> EVENTUM
