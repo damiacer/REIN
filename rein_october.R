@@ -379,6 +379,22 @@ apkd$EVENT <- as.character(apkd$EVENT)
 str(apkd$EVENT)
 table(apkd$EVENT)
 
+d <- as.data.frame(apkd$delai_DC)
+d[is.na(d)] <- "0"
+apkd$deathbinary <- d
+apkd$DEATH[apkd$deathbinary == 0] <- "0"
+apkd$DEATH[apkd$deathbinary > 0] <- "1"
+tabde <- table(apkd$DEATH)
+prop.table(tabde)
+
+apkd$DGRF.d = as.numeric(as.Date(apkd$DGRF, "%d/%m/%Y"))
+t <- as.data.frame(apkd$DGRF.d)
+t[is.na(t)] <- "0"
+apkd$transplantationbinary <- t
+apkd$TRANSP[apkd$transplantationbinary == 0] <- "0"
+apkd$TRANSP[apkd$transplantationbinary > 0] <- "1"
+table(apkd$TRANSP)
+
 #-------------------------------------------------------------------------------
 
 # RECODE THE "apkd$DGN_PAL" VARIABLE  (DIAGNOSIS)
@@ -488,38 +504,58 @@ APKD1 = merge(apkd, hap.data1, by.x = "RREC_COD_ANO", by.y = "RREC_COD_ANO",
               all.x = TRUE, all.y = FALSE)
 count(APKD1) # n=2560
 
+# 2 TRANSPLANTATION
 APKD2 = merge(APKD1, hap.data2, by.x = "RREC_COD_ANO", by.y = "RREC_COD_ANO",
               all.x = TRUE, all.y = FALSE)
 count(APKD2) # n=2560
 
 names(APKD2)
 
-APKD.names = subset(APKD2, select = -c(num_enq.x, num_enq.y, 
-                                       transplantation.d.x, transplantation.d.y, 
-                                       event.d.x, event.d.y, 
-                                       inclusion.d.x, inclusion.d.y))
+# APKD.names = subset(APKD2, select = -c(num_enq.x, num_enq.y, 
+#                                       transplantation.d.x, transplantation.d.y, 
+#                                       event.d.x, event.d.y, 
+#                                       inclusion.d.x, inclusion.d.y))
 
-names(APKD.names)
 
 #-------------------------------------------------------------------------------
 
 # NEW VARIABLES 
 
-eventinclusion <- as.data.frame(APKD.names$event01)
+eventinclusion <- as.data.frame(APKD2$event01)
 eventinclusion[is.na(eventinclusion)] <- "0"
 table(eventinclusion)
+APKD2$eventinclusion <- eventinclusion
 
 # eventinclusion
 # 0    1 
 # 2299  261 == 2560
 
-eventtransp <- as.data.frame(APKD.names$transplantation01)
+eventtransp <- as.data.frame(APKD2$transplantation01)
 eventtransp[is.na(eventtransp)] <- "0"
 table(eventtransp)
+APKD2$eventtransp <- eventtransp
 
 # eventtransp
 # 0    1 
 # 2453  107 
+
+################################################################################
+
+APKD2$EVENTUM = ifelse(eventinclusion == "1", "1", "0")
+
+APKD2$EVENTUM2[APKD2$eventinclusion == "1" & APKD2$EVENT == "1"] <- "1"
+APKD2$EVENTUM2[APKD2$eventinclusion == "0" & APKD2$EVENT == "0"] <- "0"
+APKD2$EVENTUM2[APKD2$eventinclusion == "0" & APKD2$EVENT == "1"] <- "0"
+APKD2$EVENTUM2[APKD2$eventinclusion == "1" & APKD2$EVENT == "0"] <- "0"
+table(APKD2$EVENTUM2)
+
+APKD2$TRANSPONO = ifelse(eventtransp == 1, )
+
+APKD2$TRANSPONO[APKD2$eventtransp == "1" & APKD2$TRANSP == "1"] <- "1"
+APKD2$TRANSPONO[APKD2$eventtransp == "0" & APKD2$TRANSP == "1"] <- "0"
+APKD2$TRANSPONO[APKD2$eventtransp == "0" & APKD2$TRANSP == "0"] <- "0"
+APKD2$TRANSPONO[APKD2$eventtransp == "1" & APKD2$TRANSP == "0"] <- "1"
+table(APKD2$TRANSPONO)
 
 ################################################################################
 ################################################################################
@@ -536,15 +572,18 @@ table(eventtransp)
 # DPDV = "Date de perdu de vue"
 # DATE_DERNOUV2019 = "Date de dernières nouvelles 2019"
 
-dput(names(APKD.names))
+dput(names(APKD2))
 
-small <- APKD.names[,c("num_enq", "RREC_COD_ANO", "DDC",
-                       "eventtransp","DDIRT", "DGRF", "DSVR", "DPDV",
-                       "DATE_DERNOUV2019","DGN_PAL", "eventinclusion",
-                       "DGN_PALs")]
+small <- APKD2[,c(
+                      "RREC_COD_ANO", "DDC",
+                      "eventtransp",
+                      "DDIRT", "DGRF", "DSVR", "DPDV",
+                      "DATE_DERNOUV2019","DGN_PAL", 
+                      "eventinclusion",
+                      "DGN_PALs",
+                      "evdate", "DEATH", "EVENTUM")]
 
-# VARIABLES THAT CHANGED WITH THE PREVIOUS VERSION
-# EVENT -> EVENTUM
+#-------------------------------------------------------------------------------
 
 # SAMPLE RANDOM LINE
 library(dplyr)
@@ -613,50 +652,40 @@ table(random$DGRF.d, random$DGRF)
 
 fup.a = as.Date(random$DATE_DERNOUV2019, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")  #LAST FOLLOW-UP
 fup.b = as.Date(random$DGRF, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")              #GREFFE
-fup.c = as.Date(random$hapdate, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")           #EVENT
+fup.c = as.Date(random$evdate, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")           #EVENT
 fup.d = as.Date(random$DDC, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")               #DEATH
 
 ################################################################################
 
+# FOLLOW UP IN 3 STEPS 
 
-fup.1 = ifelse(tran.bef.event01 == 1, fup.b, fup.a)
+# TRANSPLANTATION
+
+general_fup1 = ifelse(random$eventtransp == "0", fup.b, fup.a)
+# if the event occurs after the transplantation -> fup to transplantation
+# if the event occurs before the transplantation -> fup to event
+
+general_fup2 = ifelse(eventinclusion == "1", fup.c, fup.a)
+
+general_fup3 = ifelse(random$DEATH == "1", fup.d, fup.a)
+
+# GENERAL IF ELSE STATEMENT
+
+all_fup = ifelse(
+  eventinclusion == "1", fup.c
+)
+# FOLLOW-UP
+
+random$followup = general_fup3
+
+random$followup_month = random$followup/(365.25/12)
 
 ################################################################################
 
-# STEP 1: EXCLUSION OF THE EVENT WITH A NEGATIVE FOLLOW UP 
-# THIS EVENTS OCCUR BEFORE THE INCLUSION OF THE PATIENT
-str(fup.c)
-fup.cp = ifelse(fup.c < 0, "", fup.c)
-fup.cp
-table(fup.c, fup.cp)
+print <- random[,c(
+  "followup", "followup_month", "DDIRT", "DDC", "DGRF",
+  "DATE_DERNOUV2019", "evdate", "eventtransp", "eventinclusion")]
+View(print)
 
-# STEP 2: COMPARE THE LAST FOLLOW UP WITH DEATH 
-require("magrittr")
-require("dplyr")
-
-random$DDC.d = as.Date(random$DDC, "%d/%m/%Y")
-random$DDC.n = as.numeric(random$DDC.d)
-random$DATE_DERNOUV2019.d = as.Date(random$DATE_DERNOUV2019, "%d/%m/%Y")
-random$DATE_DERNOUV2019.n = as.numeric(random$DATE_DERNOUV2019.d)
-
-death.is.lastfup <- random %>%
-  mutate("de.last" = ifelse(DDC.n == DATE_DERNOUV2019.n, "True", "False"))
-is.data.frame(death.is.lastfup)
-names(death.is.lastfup)
-table(death.is.lastfup$de.last)
-table(random$DDC.d)
-# CONCLUSION: in the random database the date of the last follow-up always 
-# coincides with the date of the death
-
-# STEP 3: TRANSPLATNATION TIME
-
-fup.cpn = as.numeric(as.character(fup.cp))
-transp.bef.event = ifelse(fup.b < fup.cpn, 1, 0) # FOLLOW UP TRANSPL < FOLLOW UP EVENT (EVENT OCCURS BEFORE)
-table(transp.bef.event)
-
-followup.transp = ifelse(transp.bef.event == "1", fup.b, fup.a) 
-
-# STEP 4: THE WHOLE FOLLOW UP
-# 4.1: GREFFE
-
-followup.g = ifelse()
+library("reader")
+write_csv2(print, "P:/UBRC_M2/REYES/ANALYSIS/DATABASES/csv_data/print_reader.csv")
