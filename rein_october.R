@@ -526,6 +526,11 @@ eventinclusion[is.na(eventinclusion)] <- "0"
 table(eventinclusion)
 APKD2$eventinclusion <- eventinclusion
 
+APKD2$event.inclusion[APKD2$eventinclusion == "0"] <- "no event"
+APKD2$event.inclusion[APKD2$eventinclusion == "1"] <- "event"
+str(APKD2$event.inclusion)
+table(APKD2$event.inclusion)
+
 # eventinclusion
 # 0    1 
 # 2299  261 == 2560
@@ -535,28 +540,61 @@ eventtransp[is.na(eventtransp)] <- "0"
 table(eventtransp)
 APKD2$eventtransp <- eventtransp
 
+APKD2$event.transp[APKD2$eventtransp == "0"] <- "ev after tr"
+APKD2$event.transp[APKD2$eventtransp == "1"] <- "ev bef tr"
+str(APKD2$event.transp)
+table(APKD2$event.transp)
+
+table(APKD2$event.transp, APKD2$TRANSP)
+
+APKD2$event.transpl[APKD2$event.transp == "ev after tr" & APKD2$TRANSP == "0"] <- "transp-"
+APKD2$event.transpl[APKD2$event.transp == "ev after tr" & APKD2$TRANSP == "1"] <- "eve-/tr+"
+APKD2$event.transpl[APKD2$event.transp == "ev bef tr" & APKD2$TRANSP == "1"] <- "event"
+table(APKD2$event.transpl)
+
 # eventtransp
 # 0    1 
 # 2453  107 
 
 ################################################################################
-
-APKD2$EVENTUM = ifelse(eventinclusion == "1", "1", "0")
-
-APKD2$EVENTUM2[APKD2$eventinclusion == "1" & APKD2$EVENT == "1"] <- "1"
-APKD2$EVENTUM2[APKD2$eventinclusion == "0" & APKD2$EVENT == "0"] <- "0"
-APKD2$EVENTUM2[APKD2$eventinclusion == "0" & APKD2$EVENT == "1"] <- "0"
-APKD2$EVENTUM2[APKD2$eventinclusion == "1" & APKD2$EVENT == "0"] <- "0"
-table(APKD2$EVENTUM2)
-
-APKD2$TRANSPONO = ifelse(eventtransp == 1, )
-
-APKD2$TRANSPONO[APKD2$eventtransp == "1" & APKD2$TRANSP == "1"] <- "1"
-APKD2$TRANSPONO[APKD2$eventtransp == "0" & APKD2$TRANSP == "1"] <- "0"
-APKD2$TRANSPONO[APKD2$eventtransp == "0" & APKD2$TRANSP == "0"] <- "0"
-APKD2$TRANSPONO[APKD2$eventtransp == "1" & APKD2$TRANSP == "0"] <- "1"
-table(APKD2$TRANSPONO)
-
+#
+#APKD2$EVENTUM = ifelse(eventinclusion == "1", "1", "0")
+#
+#APKD2$EVENTUM[APKD2$eventinclusion == "1" & APKD2$EVENT == "1"] <- "1"
+#APKD2$EVENTUM[APKD2$eventinclusion == "0" & APKD2$EVENT == "0"] <- "0"
+#APKD2$EVENTUM[APKD2$eventinclusion == "0" & APKD2$EVENT == "1"] <- "0"
+#APKD2$EVENTUM[APKD2$eventinclusion == "1" & APKD2$EVENT == "0"] <- "0"
+#table(APKD2$EVENTUM)
+#
+#APKD2$TRANSPONO[APKD2$eventtransp == "1" & APKD2$TRANSP == "1"] <- "1"
+#APKD2$TRANSPONO[APKD2$eventtransp == "0" & APKD2$TRANSP == "1"] <- "0"
+#APKD2$TRANSPONO[APKD2$eventtransp == "0" & APKD2$TRANSP == "0"] <- "0"
+#APKD2$TRANSPONO[APKD2$eventtransp == "1" & APKD2$TRANSP == "0"] <- "1"
+#table(APKD2$TRANSPONO)
+#table(APKD2$TRANSPONO, APKD2$EVENTUM)
+#
+# table(APKD2$EVENTUM)
+# 0    1 
+# 2299  261 
+#
+# table(APKD2$TRANSPONO)
+# 0    1 
+# 2453  107 
+#
+# table(APKD2$TRANSPONO, APKD2$EVENTUM)
+#     0    1
+#0 2231  222
+#1   68   39
+#
+#APKD2$EVENTUM.T[APKD2$TRANSPONO == 1 & APKD2$EVENTUM == 1] <- "no event"
+#APKD2$EVENTUM.T[APKD2$TRANSPONO == 0 & APKD2$EVENTUM == 0] <- "no event"
+#APKD2$EVENTUM.T[APKD2$TRANSPONO == 1 & APKD2$EVENTUM == 0] <- "no event"
+#APKD2$EVENTUM.T[APKD2$TRANSPONO == 0 & APKD2$EVENTUM == 1] <- "event"
+#table(APKD2$EVENTUM.T)
+#
+#event no event 
+#222     2338 
+#
 ################################################################################
 ################################################################################
 ################################################################################
@@ -576,12 +614,9 @@ dput(names(APKD2))
 
 small <- APKD2[,c(
                       "RREC_COD_ANO", "DDC",
-                      "eventtransp",
-                      "DDIRT", "DGRF", "DSVR", "DPDV",
-                      "DATE_DERNOUV2019","DGN_PAL", 
-                      "eventinclusion",
-                      "DGN_PALs",
-                      "evdate", "DEATH", "EVENTUM")]
+                      "DDIRT", "DGRF",
+                      "DATE_DERNOUV2019", 
+                      "evdate", "DEATH", "event.transpl", "event.inclusion")]
 
 #-------------------------------------------------------------------------------
 
@@ -650,10 +685,18 @@ table(random$DGRF.d, random$DGRF)
 ### DPDV = "Date de perdu de vue"
 ### DATE_DERNOUV2019 = "Date de dernières nouvelles 2019"
 
-fup.a = as.Date(random$DATE_DERNOUV2019, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")  #LAST FOLLOW-UP
-fup.b = as.Date(random$DGRF, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")              #GREFFE
-fup.c = as.Date(random$evdate, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")           #EVENT
-fup.d = as.Date(random$DDC, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")               #DEATH
+#LAST FOLLOW-UP
+fup.a = as.Date(random$DATE_DERNOUV2019, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")
+fup.a = as.numeric(fup.a)
+#GREFFE
+fup.b = as.Date(random$DGRF, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")
+fup.b = as.numeric(fup.b)
+#EVENT
+fup.c = as.Date(random$evdate, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")
+fup.c = as.numeric(fup.c)
+#DEATH
+fup.d = as.Date(random$DDC, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")
+fup.d = as.numeric(fup.d)
 
 ################################################################################
 
@@ -670,21 +713,37 @@ general_fup2 = ifelse(eventinclusion == "1", fup.c, fup.a)
 general_fup3 = ifelse(random$DEATH == "1", fup.d, fup.a)
 
 # GENERAL IF ELSE STATEMENT
+# This code doesn't calculate the followup
+fup.transpl = ifelse(
+  random$TRANSPONO == "1", fup.b,
+    ifelse(random$EVENTUM == "1", fup.c))
 
-all_fup = ifelse(
-  eventinclusion == "1", fup.c
-)
 # FOLLOW-UP
 
-random$followup = general_fup3
-
+random$followup = all_fup
 random$followup_month = random$followup/(365.25/12)
+
+#-------------------------------------------------------------------------------
+
+library("dplyr")
+randomfup <- random %>%
+  mutate(group = case_when(TRASPONO))
+
+#-------------------------------------------------------------------------------
+
+followup1 = ifelse(random$EVENTUM.T == "event", fup.c, fup.a)
+followup2 = ifelse
+followup2 = ifelse(random$DEATH == "1", fup.d, followup1)
+
+random$followup.2 = followup2
+
+random$followup.2m = random$followup.2 / (365.25/12)
 
 ################################################################################
 
 print <- random[,c(
-  "followup", "followup_month", "DDIRT", "DDC", "DGRF",
-  "DATE_DERNOUV2019", "evdate", "eventtransp", "eventinclusion")]
+  "followup.2", "followup.2m", "DDIRT", "DDC", "DGRF",
+  "DATE_DERNOUV2019", "evdate")]
 View(print)
 
 library("reader")
