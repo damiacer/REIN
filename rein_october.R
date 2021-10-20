@@ -700,6 +700,13 @@ fup.d = as.numeric(fup.d)
 
 ################################################################################
 
+names(small)
+
+foup1 = ifelse(random$event.transpl == "event", fup.c, fup.b)
+foup2 = ifelse(random$event.transpl == "transp-", fup.a)
+
+################################################################################
+
 # FOLLOW UP IN 3 STEPS 
 
 # TRANSPLANTATION
