@@ -520,6 +520,7 @@ names(APKD2)
 #-------------------------------------------------------------------------------
 
 # NEW VARIABLES 
+# FOLLOWING VARIABLES WILL BE USED TO CALCULATE LAST DATE TO FOLLOW UP 
 
 eventinclusion <- as.data.frame(APKD2$event01)
 eventinclusion[is.na(eventinclusion)] <- "0"
@@ -624,7 +625,7 @@ small <- APKD2[,c(
   "RREC_COD_ANO", "DDC",
   "DDIRT", "DGRF",
   "DATE_DERNOUV2019", 
-  "evdate", "DEATH", "event.transpl", "event.inclusion")]
+  "evdate", "DEATH", "event.transpl", "event.inclusion", "EVENTUM")]
 
 #-------------------------------------------------------------------------------
 
@@ -696,17 +697,24 @@ table(random$DGRF.d, random$DGRF)
 #LAST FOLLOW-UP
 fup.a = as.Date(random$DATE_DERNOUV2019, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")
 fup.a = as.numeric(fup.a)
+random$fup.a <- fup.a
 #GREFFE
 fup.b = as.Date(random$DGRF, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")
 fup.b = as.numeric(fup.b)
+random$fup.b <- fup.b
 #EVENT
 fup.c = as.Date(random$evdate, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")
 fup.c = as.numeric(fup.c)
+random$fup.c <- fup.c
 #DEATH
 fup.d = as.Date(random$DDC, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")
 fup.d = as.numeric(fup.d)
+random$fup.d <- fup.d
 
 ################################################################################
+
+# FOLLOW UP ACCORDING TO LAST DATE TO FUP BY ifelse FUNCION
+# NOTE: this is currently not working
 
 # table(APKD2$event.transpl, APKD2$event.inclusion)
 #           event no event
@@ -714,88 +722,126 @@ fup.d = as.numeric(fup.d)
 #eve+/tr+    39       68
 #transp-    175     1142
 
-random$followup[random$event.transpl == "eve-/tr+" & random$event.inclusion == "event"] <- fup.b
-random$followup[random$event.transpl == "eve-/tr+" & random$event.inclusion == "no event"] <- fup.b
-random$followup[random$event.transpl == "eve+/tr+" & random$event.inclusion == "event"] <- fup.c
-random$followup[random$event.transpl == "eve+/tr+" & random$event.inclusion == "no event"] <- fup.a #??
-random$followup[random$event.transpl == "transp-" & random$event.inclusion == "event"] <- fup.c
-random$followup[random$event.transpl == "transp-" & random$event.inclusion == "no event"] <- fup.a
-
-random$followup.d = ifelse(random$DEATH == "1", fup.d, random$followup)
 
 foup.t = ifelse(random$event.transpl == "eve-/tr+", fup.b,
                 ifelse(random$event.transpl == "eve+/tr+", fup.c, "x"))
 
 foup.t.a = ifelse(random$event.transpl == "eve-/tr+", fup.b,
-                ifelse(random$event.transpl == "eve+/tr+", fup.c, fup.a))
+                  ifelse(random$event.transpl == "eve+/tr+", fup.c, fup.a))
 
-foup.t.inclu = ifelse(random$event.inclusion == "no event", foup.t.a, fup.c) #### ca devrait marcher
-foup.t.inclu.m = foup.t.inclu / (365.25/12)
+foup.t.inclu = ifelse(random$event.inclusion == "no event", foup.t.a, fup.c) 
+foup.t.includ = ifelse(random$DEATH == "1", fup.d, foup.t.inclu)
+identical(foup.t.inclu, foup.t.includ)
+
+foup.t.inclu.m = foup.t.includ / (365.25/12)
 
 random$foup.t.inclu <- foup.t.inclu
+random$foup.t.includ <- foup.t.includ
 random$foup.t.inclu.m <- foup.t.inclu.m
 
-random$foup.t.inclusion[random$event.inclusion == "event" & foup.t == "x"] <- fup.c 
-random$foup.t.inclusion[random$event.inclusion == "no event" & foup.t == "x"] <- fup.a
-
-foup.tinc = ifelse(random$event.inclusion == "event", fup.c, foup.t)
-foup.tincd = ifelse(random$DEATH == "1", fup.d, foup.tinc)
-
-#-------------------------------------------------------------------------------
-
-random$foup.var[random$event.transpl == "eve-/tr+" & random$event.inclusion == "no event"] <- fup.b
-random$foup.var[random$event.transpl == "eve-/tr+" & random$event.inclusion == "event"] <- fup.c
-random$foup.var[random$event.transpl == "event" & random$event.inclusion == "no event"] <- fup.b
-random$foup.var[random$event.transpl == "event" & random$event.inclusion == "event"] <- fup.c
-random$foup.var[random$event.transpl == "transp-" & random$event.inclusion == "no event"] <- fup.a
-random$foup.var[random$event.transpl == "transp-" & random$event.inclusion == "event"] <- fup.c
-
-random$foup.d = ifelse(random$DEATH == 1, fup.d, random$foup.var)
 ################################################################################
 
-# FOLLOW UP IN 3 STEPS 
+# LAST FOLLOWUP DATE
+# THE FOLLOWING CODE CREATES A NEW VARIABLE CORRESPONDING TO THE 
+# LAST DATE OF THE FOLLOW UP BY SELECTED CONDITIONS 
+# (IF DEATH, TRANSPLANTATION, EVENT)
 
-# TRANSPLANTATION
+require("lubridate")
 
-general_fup1 = ifelse(random$eventtransp == "0", fup.b, fup.a)
-# if the event occurs after the transplantation -> fup to transplantation
-# if the event occurs before the transplantation -> fup to event
+names(random)
 
-general_fup2 = ifelse(eventinclusion == "1", fup.c, fup.a)
+random$DDC.d = as.Date(random$DDC, "%d/%m/%Y")
+random$DATE_DERNOUV2019.d = as.Date(random$DATE_DERNOUV2019, "%d/%m/%Y")
+random$DDIRT.d = as.Date(random$DDIRT, "%d/%m/%Y")
+random$DGRF.d = as.Date(random$DGRF, "%d/%m/%Y")
+random$evdate.d = as.Date(random$evdate, "%d/%m/%Y")
 
-general_fup3 = ifelse(random$DEATH == "1", fup.d, fup.a)
-
-# GENERAL IF ELSE STATEMENT
-# This code doesn't calculate the followup
-fup.transpl = ifelse(
-  random$TRANSPONO == "1", fup.b,
-  ifelse(random$EVENTUM == "1", fup.c))
-
-# FOLLOW-UP
-
-random$followup = all_fup
-random$followup_month = random$followup/(365.25/12)
+random$date <- if_else(random$DEATH == "1", random$DDC.d, random$DATE_DERNOUV2019.d)
+random$date <- as.Date(random$date, "%d/%m/%Y")
 
 #-------------------------------------------------------------------------------
 
-library("dplyr")
-randomfup <- random %>%
-  mutate(group = case_when(TRASPONO))
+random$date2 <- if_else(random$event.inclusion == "event", random$evdate.d, random$date)
+random$date2 <- as.Date(random$date2, "%d/%m/%Y")
 
 #-------------------------------------------------------------------------------
 
-followup1 = ifelse(random$EVENTUM.T == "event", fup.c, fup.a)
-followup2 = ifelse
-followup2 = ifelse(random$DEATH == "1", fup.d, followup1)
-
-random$followup.2 = followup2
-
-random$followup.2m = random$followup.2 / (365.25/12)
+random$date3 <- if_else(random$event.transpl == "eve-/tr+", random$DGRF.d, random$date2)
+random$date3 <- as.Date(random$date3, "%d/%m/%Y")
 
 ################################################################################
 
-print <- random[,c("DDIRT", "DATE_DERNOUV2019", "DDC", "DGRF", "foup.t.inclusion", "foup.t.inclu.m")]
-View(print)
+# FOLLOW UP 
+
+random$followup.reader = as.Date(random$date3, "%d/%m/%Y") - as.Date(random$DDIRT, "%d/%m/%Y")
+random$followup.reader.months = random$followup.reader / (365.25/12)
+
+#Time differences in months
+#[1] 12.09034908  0.00000000 11.89322382  0.00000000 11.72895277 11.99178645
+#[7] 11.99178645  0.09856263 48.06570842 11.76180698 24.11498973 11.99178645
+#[13] 48.00000000 24.21355236  0.00000000 11.89322382 38.04517454  0.00000000
+#[19] 23.98357290 24.08213552 36.00821355 36.00821355  3.28542094 11.95893224
+#[25] 24.01642710  0.00000000 47.86858316 24.01642710  0.00000000 10.11909651
+#[31] 23.98357290  0.03285421 11.99178645  0.00000000 23.98357290 48.03285421
+#[37] 12.09034908  9.23203285  0.00000000 11.92607803 34.26694045 12.02464066
+#[43]  3.41683778 36.13963039 12.25462012 35.67967146  9.36344969 23.95071869
+#[49] 11.99178645 14.19301848 20.20533881 36.10677618 23.91786448 11.82751540
+#[55]  0.19712526 35.74537988 11.99178645 11.99178645  0.16427105 48.13141684
+#[61] 47.70431211 12.09034908 11.99178645 24.01642710  0.00000000 11.95893224
+#[67]  0.00000000 12.05749487 11.99178645 25.23203285 11.69609856  0.06570842
+#[73]  0.00000000  0.00000000  0.32854209 11.99178645 11.99178645 12.05749487
+#[79] 11.99178645 23.98357290  0.00000000 12.02464066  0.16427105 36.33675565
+#[85] 23.85215606 12.32032854 12.12320329 11.99178645 47.70431211 11.89322382
+#[91] 35.97535934 24.27926078 48.06570842  0.00000000 35.71252567 35.71252567
+#[97]  0.00000000 24.01642710 47.80287474 47.96714579
+
+################################################################################
 
 library("reader")
+
+print.date <- random[,c("DATE_DERNOUV2019.d", "DGRF.d", "DDC.d", "evdate.d", "DDIRT.d", "date3")]
+write_csv2(print.date, "P:/UBRC_M2/REYES/ANALYSIS/DATABASES/csv_data/print_readerdate.csv")
+
+#-------------------------------------------------------------------------------
+
+print.mb <- random[,c ("foup.t.inclu", "foup.t.inclu.m", "foup.t.includ",
+                      "DDIRT", "DATE_DERNOUV2019", "evdate", "DDC", "DGRF")]
+
+print.fup <- random[,c ("fup.a", "fup.b", "fup.c", "fup.d",
+                        "DDIRT", "DATE_DERNOUV2019", "evdate", "DDC", "DGRF")]
+# MACBOOK
 write_csv2(print, "/Users/damianocerasuolo/Desktop/PhD/M2/DATABASES_REIN/csv_data/print_reader.csv")
+# PC
+write_csv2(print.mb, "P:/UBRC_M2/REYES/ANALYSIS/DATABASES/csv_data/print_reader.mb.csv")
+write_csv2(print.fup, "P:/UBRC_M2/REYES/ANALYSIS/DATABASES/csv_data/print_reader.fup.csv")
+
+################################################################################
+
+random2 <- random[,c(followup.reader, )]
+
+install.packages("survminer")
+library("survminer")
+
+random$status <- random$EVENTUM
+random$time <- random$followup.reader/(365.25/12)
+
+linelistsurv.by = survfit(Surv(time, status) ~ 1, data = random)
+
+survminer::ggsurvplot(
+  linelistsurv.by, 
+  data = random,          
+  conf.int = FALSE,              # do not show confidence interval of KM estimates
+  surv.scale = "percent",        # present probabilities in the y axis in %
+  break.time.by = 10,            # present the time axis with an increment of 10 days
+  xlab = "Follow-up days",
+  ylab = "Survival Probability",
+  pval = T,                      # print p-value of Log-rank test 
+  pval.coord = c(40,.91),        # print p-value at these plot coordinates
+  risk.table = T,                # print the risk table at bottom 
+  legend.title = "overall",     # legend characteristics, "class1" and "class2" most of the time
+  #legend.labs = c("class1","class2"),
+  font.legend = 10, 
+  palette = "Dark2",             # color palette 
+  surv.median.line = "hv",       # draw horizontal and vertical lines to the median survivals
+  ggtheme = theme_light()        # simplify plot background
+)
