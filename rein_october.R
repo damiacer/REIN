@@ -124,24 +124,24 @@ count(rein_m1)
 
 is.data.table(rein_m1)
 
-    # RENAME COLUMNS FOR "REIN_M1"
-    # WARNING: THIS IS NOT NECESSARY ON MAC
-    rein_m1 <- as_tibble(rein_m1)
-    rein_m1 <- rein_m1 %>% rename(
-      # new name = old name,
-      "num_enq" = "ï..num_enq")
+# RENAME COLUMNS FOR "REIN_M1"
+# WARNING: THIS IS NOT NECESSARY ON MAC
+rein_m1 <- as_tibble(rein_m1)
+rein_m1 <- rein_m1 %>% rename(
+  # new name = old name,
+  "num_enq" = "ï..num_enq")
 
 # MERGING REIN_M1 WITH HOSPITALISATION DATA (MORE LINES PER SUBJECT)
 # THIS PROCESS USES THE "id" TO MERGE DATABASES 
 # TO KEEP ONLY FULL CORRESPONDANCE USE THE FOLLOWING PROCEDURE
 count(hosp)
 
-    # RENAME COLUMNS FOR "HOSP"
-    # WARNING: THIS IS NOT NECESSARY ON MAC
-    hosp <- as_tibble(hosp)
-    hosp <- hosp %>% rename(
-      # new name = old name,
-      "num_enq" = "ï..num_enq")
+# RENAME COLUMNS FOR "HOSP"
+# WARNING: THIS IS NOT NECESSARY ON MAC
+hosp <- as_tibble(hosp)
+hosp <- hosp %>% rename(
+  # new name = old name,
+  "num_enq" = "ï..num_enq")
 
 # CHECK THE "hospdata.R" BEFORE LAUNCHING THIS MERGING ON WINDOWS
 
@@ -328,8 +328,8 @@ table(rein_mone$nephgp)
 
 rein_mone$apkd01[rein_mone$nephgp=="APKD"] <- "1"
 rein_mone$apkd01[rein_mone$nephgp=="autre"] <- "0"
-  rein_mone$apkd01[rein_mone$nephgp=="diabète"] <- "0"  #MACBOOK
-  rein_mone$apkd01[rein_mone$nephgp=="diabÃ¨te"] <- "0" #PC
+rein_mone$apkd01[rein_mone$nephgp=="diabète"] <- "0"  #MACBOOK
+rein_mone$apkd01[rein_mone$nephgp=="diabÃ¨te"] <- "0" #PC
 rein_mone$apkd01[rein_mone$nephgp=="gnc"] <- "0"
 rein_mone$apkd01[rein_mone$nephgp=="HTA"] <- "0"
 rein_mone$apkd01[rein_mone$nephgp=="Inconnu"] <- "0"
@@ -540,6 +540,10 @@ eventtransp[is.na(eventtransp)] <- "0"
 table(eventtransp)
 APKD2$eventtransp <- eventtransp
 
+# eventtransp
+# 0    1 
+# 2453  107 
+
 APKD2$event.transp[APKD2$eventtransp == "0"] <- "ev after tr"
 APKD2$event.transp[APKD2$eventtransp == "1"] <- "ev bef tr"
 str(APKD2$event.transp)
@@ -549,12 +553,16 @@ table(APKD2$event.transp, APKD2$TRANSP)
 
 APKD2$event.transpl[APKD2$event.transp == "ev after tr" & APKD2$TRANSP == "0"] <- "transp-"
 APKD2$event.transpl[APKD2$event.transp == "ev after tr" & APKD2$TRANSP == "1"] <- "eve-/tr+"
-APKD2$event.transpl[APKD2$event.transp == "ev bef tr" & APKD2$TRANSP == "1"] <- "event"
+APKD2$event.transpl[APKD2$event.transp == "ev bef tr" & APKD2$TRANSP == "1"] <- "eve+/tr+"
 table(APKD2$event.transpl)
+table(APKD2$event.transpl, APKD2$event.inclusion)
 
-# eventtransp
-# 0    1 
-# 2453  107 
+#           event no event
+#eve-/tr+    47     1089
+#eve+/tr+    39       68
+#transp-    175     1142
+
+
 
 ################################################################################
 #
@@ -613,10 +621,10 @@ table(APKD2$event.transpl)
 dput(names(APKD2))
 
 small <- APKD2[,c(
-                      "RREC_COD_ANO", "DDC",
-                      "DDIRT", "DGRF",
-                      "DATE_DERNOUV2019", 
-                      "evdate", "DEATH", "event.transpl", "event.inclusion")]
+  "RREC_COD_ANO", "DDC",
+  "DDIRT", "DGRF",
+  "DATE_DERNOUV2019", 
+  "evdate", "DEATH", "event.transpl", "event.inclusion")]
 
 #-------------------------------------------------------------------------------
 
@@ -700,11 +708,49 @@ fup.d = as.numeric(fup.d)
 
 ################################################################################
 
-names(small)
+# table(APKD2$event.transpl, APKD2$event.inclusion)
+#           event no event
+#eve-/tr+    47     1089
+#eve+/tr+    39       68
+#transp-    175     1142
 
-foup1 = ifelse(random$event.transpl == "event", fup.c, fup.b)
-foup2 = ifelse(random$event.transpl == "transp-", fup.a)
+random$followup[random$event.transpl == "eve-/tr+" & random$event.inclusion == "event"] <- fup.b
+random$followup[random$event.transpl == "eve-/tr+" & random$event.inclusion == "no event"] <- fup.b
+random$followup[random$event.transpl == "eve+/tr+" & random$event.inclusion == "event"] <- fup.c
+random$followup[random$event.transpl == "eve+/tr+" & random$event.inclusion == "no event"] <- fup.a #??
+random$followup[random$event.transpl == "transp-" & random$event.inclusion == "event"] <- fup.c
+random$followup[random$event.transpl == "transp-" & random$event.inclusion == "no event"] <- fup.a
 
+random$followup.d = ifelse(random$DEATH == "1", fup.d, random$followup)
+
+foup.t = ifelse(random$event.transpl == "eve-/tr+", fup.b,
+                ifelse(random$event.transpl == "eve+/tr+", fup.c, "x"))
+
+foup.t.a = ifelse(random$event.transpl == "eve-/tr+", fup.b,
+                ifelse(random$event.transpl == "eve+/tr+", fup.c, fup.a))
+
+foup.t.inclu = ifelse(random$event.inclusion == "no event", foup.t.a, fup.c) #### ca devrait marcher
+foup.t.inclu.m = foup.t.inclu / (365.25/12)
+
+random$foup.t.inclu <- foup.t.inclu
+random$foup.t.inclu.m <- foup.t.inclu.m
+
+random$foup.t.inclusion[random$event.inclusion == "event" & foup.t == "x"] <- fup.c 
+random$foup.t.inclusion[random$event.inclusion == "no event" & foup.t == "x"] <- fup.a
+
+foup.tinc = ifelse(random$event.inclusion == "event", fup.c, foup.t)
+foup.tincd = ifelse(random$DEATH == "1", fup.d, foup.tinc)
+
+#-------------------------------------------------------------------------------
+
+random$foup.var[random$event.transpl == "eve-/tr+" & random$event.inclusion == "no event"] <- fup.b
+random$foup.var[random$event.transpl == "eve-/tr+" & random$event.inclusion == "event"] <- fup.c
+random$foup.var[random$event.transpl == "event" & random$event.inclusion == "no event"] <- fup.b
+random$foup.var[random$event.transpl == "event" & random$event.inclusion == "event"] <- fup.c
+random$foup.var[random$event.transpl == "transp-" & random$event.inclusion == "no event"] <- fup.a
+random$foup.var[random$event.transpl == "transp-" & random$event.inclusion == "event"] <- fup.c
+
+random$foup.d = ifelse(random$DEATH == 1, fup.d, random$foup.var)
 ################################################################################
 
 # FOLLOW UP IN 3 STEPS 
@@ -723,7 +769,7 @@ general_fup3 = ifelse(random$DEATH == "1", fup.d, fup.a)
 # This code doesn't calculate the followup
 fup.transpl = ifelse(
   random$TRANSPONO == "1", fup.b,
-    ifelse(random$EVENTUM == "1", fup.c))
+  ifelse(random$EVENTUM == "1", fup.c))
 
 # FOLLOW-UP
 
@@ -748,10 +794,8 @@ random$followup.2m = random$followup.2 / (365.25/12)
 
 ################################################################################
 
-print <- random[,c(
-  "followup.2", "followup.2m", "DDIRT", "DDC", "DGRF",
-  "DATE_DERNOUV2019", "evdate")]
+print <- random[,c("DDIRT", "DATE_DERNOUV2019", "DDC", "DGRF", "foup.t.inclusion", "foup.t.inclu.m")]
 View(print)
 
 library("reader")
-write_csv2(print, "P:/UBRC_M2/REYES/ANALYSIS/DATABASES/csv_data/print_reader.csv")
+write_csv2(print, "/Users/damianocerasuolo/Desktop/PhD/M2/DATABASES_REIN/csv_data/print_reader.csv")
