@@ -713,6 +713,7 @@ rdb <- rdb %>%
   mutate(EVENTUM = case_when(
     TRANSP == "0" & EVENT == "1" ~ "event",
     TRANSP == "0" & EVENT == "0" ~ "no.event",
+    TRANSP == "1" & EVENT == "0" ~ "no.event",
     (DGRF.asd > evdate.asd) & EVENT == "1" ~ "event",
     (DGRF.asd < evdate.asd) & EVENT == "1" ~ "no.event",
     (DGRF.asd > evdate.asd) & EVENT == "0" ~ "no.event",
@@ -739,7 +740,8 @@ table(rdb$EVENT, rdb$EVENTUM)
 # CEREBRAL ISCHEMIA NOT TAKEN INTO ACCOUNT
 
 rdb$cardiovasc = if_else(rdb$ICn + rdb$ICOROn + rdb$IDMn + rdb$RYTHMn + 
-                           rdb$ANEVn > 0, "1", "0")
+                           rdb$ANEVn + rdb$AVCAITn > 0, "1", "0")
+table(rdb$cardiovasc)
 
 #-------------------------------------------------------------------------------
 
@@ -799,3 +801,14 @@ rdb <- rdb %>%
     bmi >= 25.0 & bmi < 30 ~ "3",
     bmi > 30 ~ "4",
   )) 
+
+################################################################################
+
+# TIME AND STATUS
+
+rdb$time = rdb$epilogus
+rdb$time = as.numeric(as.character(rdb$time))
+
+rdb$status = if_else(rdb$EVENTUM == "event", "1", "0")
+table(rdb$status)
+rdb$status = as.factor(rdb$status)
