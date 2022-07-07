@@ -7,5 +7,5 @@ SUMMARY:
 * _MONTHS_: code for data management (month) and data analysis (month.models) updated monthly
 * _OTHER_: other files and languages
 
-contact: damiano.cerasuolo@unicaen.fr
+contact: damiano.cerasuolo@unicaen.fr \
 gitpage: damiacer.github.io
