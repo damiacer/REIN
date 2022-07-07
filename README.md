@@ -6,6 +6,7 @@ SUMMARY:
 * _METHODS_: statistical modelling applied to data
 * _MONTHS_: code for data management (month) and data analysis (month.models) updated monthly
 * _OTHER_: other files and languages
+* _PAPER1_: codes and other documents for the first manuscript
 
 contact: damiano.cerasuolo@unicaen.fr \
 gitpage: damiacer.github.io
