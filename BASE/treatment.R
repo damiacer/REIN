@@ -9,7 +9,7 @@ table(treat$L_ATC4)
 treat <- as_tibble(treat)
 treat <- treat %>% rename(
   # new name = old name,
-  "id" = "ï..NUM_ENQ")
+  "id" = "Ã¯..NUM_ENQ")
 
 treat$eskd <- as.Date(treat$DDIRT, format = "%m/%d/%y")
 
