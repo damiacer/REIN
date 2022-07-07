@@ -1,3 +1,8 @@
+###########################
+# OBSOLETE                #
+###########################
+
+
 # TRANSFORM THE LAST FOLLOWUP DATE
 
 require("lubridate")
