@@ -9,7 +9,7 @@ names(hosp)
 hosp <- as_tibble(hosp)
 hosp <- hosp %>% rename(
   # new name = old name,
-  "id" = "ï..num_enq")
+  "id" = "Ã¯..num_enq")
 
 hosp_dup <- unique(hosp, by=id)
 count(hosp_dup)
