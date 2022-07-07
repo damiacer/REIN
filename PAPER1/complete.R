@@ -788,6 +788,14 @@ prop.table(table(rdb$diabetesMISS))*100
 # NOTE : I WILL USE THIS VARIABLE TO RUN THE NEW ANALYSIS ON DB PATIENTS ONLY.
 # THE PATIENTS WITH MISSING VALUES FOR DIABETES WILL BE THEN EXCLUDED
 
-################################################################################
+#-------------------------------------------------------------------------------
 
+# BMI IN CLASSES
 
+rdb <- rdb %>% 
+  mutate(bmic = case_when(
+    bmi < 18.5 ~ "1", 
+    bmi >= 18.5 & bmi < 25 ~ "2", 
+    bmi >= 25.0 & bmi < 30 ~ "3",
+    bmi > 30 ~ "4",
+  )) 
