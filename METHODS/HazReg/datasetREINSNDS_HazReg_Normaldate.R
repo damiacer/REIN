@@ -1,5 +1,6 @@
 getwd()
-setwd("//calebasse/cerasuo191/Documents/UNICAEN_PHD/PhD/M2/DATABASES_REIN/csv_data") 
+#setwd("//calebasse/cerasuo191/Documents/UNICAEN_PHD/PhD/M2/DATABASES_REIN/csv_data") 
+setwd("/Users/damianocerasuolo/Desktop/PhD/M2/DATABASES_REIN/csv_data") 
 
 #-PACKAGES-----------------------------------------------------------------------
 
@@ -841,7 +842,7 @@ dim(rdb) # 40980 110
 #-smaller dataset
 
 rdb = subset(rdb, select = c(EVENT, time, cardiovasc, tabac2,
-                        dial, apkd01, bmic, sex, age, diabetes))
+                             dial, apkd01, bmic, sex, age, diabetes))
 
 dim(rdb) # 40980   10
 rdb = na.omit(rdb)
@@ -923,6 +924,29 @@ max(rdb$time)
 mean(rdb$time)
 
 hist(rdb$timenom)
+
+#-time if event 0 or 1----
+
+str(rdb$EVENT)
+str(rdb$timenom)
+str(rdb$time)
+
+rdb <- rdb %>%
+  mutate(timefinal = case_when(
+    EVENT == "1" ~ time,
+    EVENT == "0" ~ timenom
+  ))
+
+mean(rdb$time)
+mean(rdb$timefinal)
+mean(rdb$timenom)
+
+#-final dataset
+
+rdb$time <- rdb$timenom # mean about 939.4704
+
+rdb = subset(rdb, select = c(EVENT, time, cardiovasc, tabac2, dial, 
+                             apkd01, bmic, sex, age, diabetes))
 
 #-HAZREG package----
 
@@ -1093,7 +1117,7 @@ kable(CI, digits = 3)
 fit_haz <- Vectorize(function(t) hllogis(t, MLE[1], MLE[2])) 
 
 curve(fit_haz,0.001, max(times), xlab = "Time (years)", ylab = "Baseline Hazard", main = "",
-      cex.axis = 1.5, cex.lab = 1.5, lwd = 2, ylim = c(0,0.04), n = 1000)
+      cex.axis = 0.9, cex.lab = 1.3, lwd = 2, ylim = c(0,0.01), xlim = c(0,5), n = 1000)
 
 # Average population survival function and KM estimator
 require("survival")
@@ -1122,7 +1146,10 @@ legend("bottomright", legend = c("KM","Parametric"), col = c("black","gray"), lw
 # Confidence intervals for the survival function based on a normal approximation
 # at specific time points t0
 
+#install.packages("SimDesign")
 require("SimDesign")
+
+HESS <- hessian(func = OPTLLGH$log_lik, x = OPTLLGH$OPT$par)
 
 # Hessian and asymptotic covariance matrix
 Sigma <- solve(HESS)
@@ -1160,7 +1187,7 @@ conf.int.surv <- function(t0, level, n.mc){
 
 
 # times for CIs calculations
-timesCI <- c(1,2.5,5,7.5,10,12.5)
+timesCI <- c(1,2,3,4,5)
 
 CIS <- matrix(0, ncol = 4, nrow = length(timesCI))
 
