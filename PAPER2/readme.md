@@ -23,7 +23,7 @@ Risque de décès chez le patient ayant présenté un AVC au cours du suivi.
 | **Sexe**              |                               |           |           | |
 | Homme                 | 34 (64.2)                     | 14 (77.8) | 20 (57.1) | |
 | Femme                 | 19 (35.8)                     | 4 (22.2)  | 15 (42.9) | 0.41 [0.14 ; 1.28]
-| **Âge**, moyenne (ET) | 64.27 (11.66)                 | 64.10 (11.35) | 64.36 (11.98) | 0.52 [0.95 ; 1.03]^[Martingale residuals montrent une non-linéarité] |
+| **Âge**, moyenne (ET) | 64.27 (11.66)                 | 64.10 (11.35) | 64.36 (11.98) | 0.52 [0.95 ; 1.03] (°)|
 | **Traitement**        |                               | 
 | Acide salicylique et derivés |1 (2.6)                 | 0 (0.0) | 1 (4.0) |
 | Antivitamines K       | 11 (28.2)                     | 3 (21.4) | 8 (32.0) |
@@ -47,7 +47,7 @@ Risque de décès chez le patient ayant présenté un AVC au cours du suivi.
 | VI                    | 7 (13.2)                      | 7 (38.9) | 0 (0.0) |
 | **Transplantation** |                               |          |         |
 | Non                   | 40 (75.5)                     | 16 (88.9) | 24 (68.6) | | 
-| Oui                   | 13 ( 24.5)                    | 2 (11.1) | 11 (31.4) | 0.58 [0.13 ; 2.56]^[proportionnalité non réspectée]  |
+| Oui                   | 13 ( 24.5)                    | 2 (11.1) | 11 (31.4) | 0.58 [0.13 ; 2.56] (#)|
 | **Atcd cardiovascularie** |                           |          |           | | 
 | Non                   | 26 (53.1)                     | 8 (53.3) | 18 (52.9) | |
 | Oui                   | 23 (46.9)                     | 7 (46.7) | 16 (47.1) | 0.74 [0.27 ; 2.10] |
@@ -61,6 +61,9 @@ Risque de décès chez le patient ayant présenté un AVC au cours du suivi.
 | <25                   | 28 (62.2)                     | 4 (8.9) | 24 (53.3) | |
 | [25-30[               | 11 (24.4)                     | 6 (13.4) | 5 (11.1) | 7.95 [2.2 ; 29.3] |
 | ≥30                   | 6 (13.4)                      | 3 (6.7) | 3 (6.6) | 5.4 [1.1 ; 22.9] |
+
+(°) variable âge, modèle de Cox : Martingale residuals montrent une non-linéarité 
+(#) variable transplantation, modèle de Cox : proportionnalité des risques non réspectée
 
 ## Suivi post-événement
 
@@ -148,7 +151,7 @@ Risque de décès dans la population n'ayant pas présenté de AVC au cours du s
 
 |                       | Overall                       | AVC(-)    | AVC(+)   |       |
 | :------                 | :-                            | :-        | :-        | -:    |
-|                       | N = 221                       | n = 203    | n = 18    | _p-value_^[chi-squared with p-value simulation or Student test]         |
+|                       | N = 221                       | n = 203    | n = 18    | _p-value_        |
 | **Modalité de traitement** |                          |           |           | _0.99_|
 | DP                    | 27 (12.2) | 25 (12.3) | 2 (11.1)| |
 | HD                    | 194 (87.8) | 178 (87.7) | 16 (88.9) |  |
@@ -197,13 +200,15 @@ Risque de décès dans la population n'ayant pas présenté de AVC au cours du s
 | [25-30[               | 73 (36.9) | 67 (36.2) | 6 (46.2) | |
 | ≥30                   | 23 (11.6) | 20 (10.8) | 3 (23.1) | |
 
+(*) p-value = chi-squared with p-value simulation or Student test
+
 <br>
 
 ---
 
 <br>
 
-## Décès en fonction de l'événement (AVC^[de tout type])
+## Décès en fonction de l'événement (AVC ischémique ou hémorragique)
 
 HR [95%CI] = 3.41 [2.11 ; 5.52]
 
