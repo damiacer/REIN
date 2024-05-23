@@ -62,7 +62,8 @@ Risque de décès chez le patient ayant présenté un AVC au cours du suivi.
 | [25-30[               | 11 (24.4)                     | 6 (13.4) | 5 (11.1) | 7.95 [2.2 ; 29.3] |
 | ≥30                   | 6 (13.4)                      | 3 (6.7) | 3 (6.6) | 5.4 [1.1 ; 22.9] |
 
-(°) variable âge, modèle de Cox : Martingale residuals montrent une non-linéarité 
+(°) variable âge, modèle de Cox : Martingale residuals montrent une non-linéarité \
+
 (#) variable transplantation, modèle de Cox : proportionnalité des risques non réspectée
 
 ## Suivi post-événement
