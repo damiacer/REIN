@@ -1,6 +1,6 @@
 ## Population 
 
-![](flow.png){width=60%}
+![](flow.png)
 
 <br>
 
