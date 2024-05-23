@@ -152,7 +152,7 @@ Risque de décès dans la population n'ayant pas présenté de AVC au cours du s
 
 |                       | Overall                       | AVC(-)    | AVC(+)   |       |
 | :------                 | :-                            | :-        | :-        | -:    |
-|                       | N = 221                       | n = 203    | n = 18    | _p-value_        |
+|                       | N = 221                       | n = 203    | n = 18    | _p-value_ (*)    |
 | **Modalité de traitement** |                          |           |           | _0.99_|
 | DP                    | 27 (12.2) | 25 (12.3) | 2 (11.1)| |
 | HD                    | 194 (87.8) | 178 (87.7) | 16 (88.9) |  |
