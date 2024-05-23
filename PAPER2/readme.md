@@ -72,7 +72,7 @@ Risque de décès chez le patient ayant présenté un AVC au cours du suivi.
 
 <br>
 
-![](km_death.png){ width=60% }
+![](km_death.png)
 
 Cette courbe représente l'incidence du décès dans la population ADPKD+ AVC+. \
 Le temps de suivi est défini comme : 
@@ -207,7 +207,7 @@ Risque de décès dans la population n'ayant pas présenté de AVC au cours du s
 
 HR [95%CI] = 3.41 [2.11 ; 5.52]
 
-![](deathbyevent.jpeg){ width=60% }
+![](deathbyevent.jpeg)
 
 
 |  | moyenne (ET) | médiane |
