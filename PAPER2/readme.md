@@ -13,7 +13,7 @@ Risque de décès chez le patient ayant présenté un AVC au cours du suivi.
 
 |                       | Overall                       | Pas décédé    | Décédé |       |
 | :----                 | :-                            | :-        | :-        | :---    |
-|                       | N = 53                        | n = 35    | n = 18    | OR [95%CI]    |
+|                       | N = 53                        | n = 35    | n = 18    | HR [95%CI]    |
 | **Modalité de traitement** |                          |           |           | |
 | DP                    | 9 (17.0)                      | 2 (11.1)  | 7 (20.0)  | |
 | HD                    | 44 (83.0)                     | 16 (88.9) | 28 (80.0) | 1.85 [0.43 ; 8.10]
@@ -94,7 +94,7 @@ Risque de décès dans la population n'ayant pas présenté de AVC au cours du s
 
 |                       | Overall                       | Pas décédé    | Décédé |       |
 | :---                 | :--                            | :--        | :--        | :--    |     
-|                       | N = 2129                      | n = 1926    | n = 203    | OR [95%CI]    |
+|                       | N = 2129                      | n = 1926    | n = 203    | HR [95%CI]    |
 | **Modalité de traitement** |                          |             |            | |
 | DP                    | 280 (13.2)                    | 255 (13.2)  | 25 (12.3)  | |
 | HD                    | 1849 (86.8)                   | 1671 (86.8) | 178 (87.7) | 1. 01 [0.66 ; 1.54] | 
