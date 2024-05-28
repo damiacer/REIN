@@ -9,7 +9,10 @@
 <br>
 
 ## Mortalité précoce chez les patients AVC(+)
-Risque de décès chez le patient ayant présenté un AVC au cours du suivi. 
+
+- Risque de décès chez le patient ayant présenté un AVC au cours du suivi ;
+- Le décés survient, en moyenne, dans le 6 mois qui suivent l'événement. En médiane, dans les 2 mois qui suivent l'événément AVC : certains patients décédent au moment de l'événement.  
+
 
 |                       | Overall                       | Pas décédé    | Décédé |       |
 | :----                 | :-                            | :-        | :-        | :---    |
@@ -30,7 +33,7 @@ Risque de décès chez le patient ayant présenté un AVC au cours du suivi.
 | Autres préparations antianemiques | 8 (20.5)          | 5 (35.7) | 3 (12.0) |
 | Groupe de l'héparine  | 3 (7.7)                       | 1 (7.1) | 2 (8.0) |
 | Inhibiteurs de l'aggregation plaquettaire | 16 (41.0) | 5 (35.7) | 11 (44.0) |
-| **Diagnostic**^[cph from rms package]        |                               |
+| **Diagnostic** ($)        |                               |
 | Accidents ischémiques cérébraux transitoires et syndromes apparentés (G45) | 15 (28.3) | 4 (22.2) | 11 (31.4) |  |
 | Hémorragie sous-arachnoïdienne (I60) | 4 (7.5)        | 1 (5.6) | 3 (8.6) |1.28 [0.14 ; 11.6] |
 | Hémorragie intracérébrale (I61)| 15 (28.3)            | 8 (44.4) | 7 (20.0) | 2.12 [0.64 ; 7.10] |
@@ -45,9 +48,9 @@ Risque de décès chez le patient ayant présenté un AVC au cours du suivi.
 | III                   | 1 (1.9)                       | 1 (5.6) | 0 (0.0) |
 | V                     | 1 (1.9)                       | 1 (5.6) | 0 (0.0) | 
 | VI                    | 7 (13.2)                      | 7 (38.9) | 0 (0.0) |
-| **Transplantation** |                               |          |         |
+| **Transplantation** (µ) |                               |          |         |
 | Non                   | 40 (75.5)                     | 16 (88.9) | 24 (68.6) | | 
-| Oui                   | 13 ( 24.5)                    | 2 (11.1) | 11 (31.4) | 0.58 [0.13 ; 2.56] (#)|
+| Oui                   | 13 ( 24.5)                    | 2 (11.1) | 11 (31.4) | 0.58 [0.13 ; 2.56] |
 | **Atcd cardiovascularie** |                           |          |           | | 
 | Non                   | 26 (53.1)                     | 8 (53.3) | 18 (52.9) | |
 | Oui                   | 23 (46.9)                     | 7 (46.7) | 16 (47.1) | 0.74 [0.27 ; 2.10] |
@@ -59,12 +62,14 @@ Risque de décès chez le patient ayant présenté un AVC au cours du suivi.
 | Oui                   | 4 (7.5)                       | 1 (5.6) | 3 (8.6) | 0.63 [0.08 ; 4.73] |
 | **IMC**               |                               |          |        | |
 | <25                   | 28 (62.2)                     | 4 (8.9) | 24 (53.3) | |
-| [25-30[               | 11 (24.4)                     | 6 (13.4) | 5 (11.1) | 7.95 [2.2 ; 29.3] |
+| [25-30[               | 11 (24.4)                     | 6 (13.4) | 5 (11.1) |  |
 | ≥30                   | 6 (13.4)                      | 3 (6.7) | 3 (6.6) | 5.4 [1.1 ; 22.9] |
 
 (°) variable âge, modèle de Cox : Martingale residuals montrent une non-linéarité \
 
-(#) variable transplantation, modèle de Cox : proportionnalité des risques non réspectée
+(µ) variable transplantation, modèle de Cox : proportionnalité des risques non réspectée \
+
+($) variable diagnostic, modèle de Cox : cph du package "rms" car 
 
 ## Suivi post-événement
 
@@ -90,7 +95,9 @@ Le temps de suivi est défini comme :
 ---
 
 ## Mortalité précoce chez les patients AVC(-)
-Risque de décès dans la population n'ayant pas présenté de AVC au cours du suivi. 
+
+- Risque de décès dans la population n'ayant pas présenté de AVC au cours du suivi. 
+
 
 |                       | Overall                       | Pas décédé    | Décédé |       |
 | :---                 | :--                            | :--        | :--        | :--    |     
@@ -148,7 +155,12 @@ Risque de décès dans la population n'ayant pas présenté de AVC au cours du s
 
 <br>
 
-## Statut AVC chez les patients décédés 
+## Décès et AVC
+
+- Association etre caractéristiques de la population et AVC chez la population décédée 
+- Suivi moyen (et médian) des patients AVC(+) et AVC(-)
+- Estimateur de Kaplan-Meier pour le décès patients AVC(+) *vs* patients AVC(-)
+
 
 |                       | Overall                       | AVC(-)    | AVC(+)   |       |
 | :------                 | :-                            | :-        | :-        | -:    |
@@ -220,3 +232,63 @@ HR [95%CI] = 3.41 [2.11 ; 5.52]
 | :-     | :-:           | :-:      |
 | **AVC(-)** | 1041 (437)   | 1035    |
 | **AVC(+)** | 1075 (506)   | 1186    |
+
+---
+
+## Décès 
+
+|                       | Overall                         | DECES(-)    | DECES(+)   |       |
+| :----                 | :--                            | :--          | :--         | ---:    |
+|                       | N = 2 182                       | n = 1961    | n = 221     | HR [95%CI]  |
+| **Modalité de traitement** |                            |             |            | |         
+| DP                    | 289 (13.2)                      | 262 (13.4)  | 27 (12.2) | |
+| HD                    | 1 893 (86.8)                    | 1 699 (86.6)| 194 (87.8) | 1.04 [0.79 ; 1.56] |
+| **Tabagisme actif**   |                                 |             |             | |      
+| Non                   | 1 177 (62.3)                    | 1 067 (62.3) | 110 (62.5) | |
+| Oui                   | 713 (37.3)                      | 647 (37.7) | 66 (37.5) | 1.02 [0.75 ; 1.39] |
+| **Sexe**              |                                 |             |             | |
+| Homme                 | 1 144 (52.4)                    | 1 015 (51.8) | 129 (58.4) | |
+| Femme                 | 1 038                           | 946 (48.2) | 92 (41.6) | 0.76 [0.58 ; 0.99] |
+| **Âge**, moyenne (ET) | 59.6 (12.8)                    | 58.2 (12.1) | 72.5 (12.3) | 1.09 [1.08 ; 1.10] |
+| **Traitement**            |                                 |             |             |   
+| Acide salycilique et derivés | 37 (2.5)                 | 37 (2.8) | 0 (0.0) | |
+| Antifibrinolytiques | 10 (0.7)                          | 9 (0.7) | 1 (0.7) | |
+| Antivitamines K | 217 (14.6)                            | 177 (13.2) | 40 (26.3) | |
+| Autres hémostatiques systémiques | 1 (0.1)              | 4 (0.3) | 0 (0.0) | |
+| Autres préparations antianemiques | 468 (31.4)          | 1 (0.1) | 0 (0.0) | |
+| Groupe de l'héparine | 286 (19.2)                       | 429 (32.1) | 39 (25.7) | |
+| Inhibiteurs directs du facteurs Xa | 2 (0.1)            | 274 (20.5) | 12 (7.9) | | 
+| Inhibiteurs de l'aggrégation plaquettaire, héparine exclue | 463 (31.1) | 403 (30.1) | 60 (39.5) | |
+| Vitamine K | 1 (0.1)                                    | 1 (0.1) | 0 (0.0) | |
+| **Diagnostic**        |                                 |             |              |
+| Aucun diagnostic      | 2 125 (97.4)                    | 1 923 (98.1) | 202 (91.4) | |
+| Accidents ischémiques cérébraux transitoires et syndromes apparentés (G45) | 16 (0.7) | 12 (0.6) | 4 (1.8) | |
+| Hémorragie sous-arachnoïienne (I60) | 4 (0.2)           | 3 (0.2) | 1 (0.5) | |
+| Hémorragie intracérébrale (I61) | 16 (0.7)              | 8 (0.4) | 8 (3.6) | |
+| Infarctus intracérébral | 20 (0.9)                      | 14 (0.7) | 6 (2.7) | |
+| Accident vasculaire cérébral non précisé | 1 (0.0)      | 1 (0.1) | 0 (0.0) | |
+| **Antécédents**       |                                 |             |               | |
+| Non                   | 2 027 (92.9)                    | 1 824 (93.0) | 202 (91.4) | |
+| Oui                   | 155 (7.1)                       | 12 (0.6) | 4 (1.8) | 1.17 [0.73 ; 1.90] |
+| **Causes de décès**   |                                 |             |               |           | 
+| Inconnue ou pas de décès | 1 976 (90.6)                 | 1 961 (100.0) | 15 (6.8) | |
+| I                     | 46 (2.1)                        | 0 (0.0) | 46 (20.8) | |
+| III                   | 22 (1.0)                        | 0 (0.0) | 22 (10.0) | |
+| V                     | 32 (1.5)                        | 0 (0.0) | 32 (14.5) | |
+| VI                    | 106 (4.9)                       | 0 (0.0) | 106 (48.0) | |
+| **Transplantation**   |                                 |             |               | |          
+| Non                   | 1 279 (58.6)                    | 1 079 (55.0) | 200 (90.5) | |
+| Oui                   | 903 (41.4)                      | 882 (45.0) | 21 (9.5) | 0.11 [0.07 ; 0.17] |
+| **Atcd cardiovasculaire** |                             |             |                | |
+| Non                   | 1 527 (73.3)                    | 1 427 (76.0) | 200 (90.5) | |
+| Oui                   | 555 (26.7)                      | 450 (24.0) | 105 (51.2) | 3.05 [2.32 ; 3.01] |
+| **Traitement en deux modalités**    |                   |             |                 | |
+| Anticoagulant         | 544 (50.8)                      | 475 (51.2) | 105 (51.2) | |
+| Antiplaquettaire      | 517 (49.2)                      | 453 (48.8) | 64 (52.5) | 1.17 [0.82 ; 1.67] |
+| **Diabetes**          |                                 |             |                 | |
+| Non                   | 1 972 (90.8)                    | 1 786 (91.4) | 189 (85.5) | |
+| Oui                   | 200 (9.2)                       | 168 (8.6) | 32 (14.5) | 1.73 [1.20 ; 2.52] |
+| **IMC**               |                                 |             |                | |
+| <25                   | 937 (48.2)                      | 835 (47.9) | 102 (51.5) | |
+| [25-30[               | 652 (33.6)                      | 579 (33.2) | 73 (36.9) | 1.05 [0.77 ; 1.42] |
+| ≥30                   | 354 (18.2)                      | 331 (19.0) | 23 (11.6) | 0.59 [0.38 ; 0.94] |
