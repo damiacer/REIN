@@ -1540,7 +1540,19 @@ summary(res.cox112)
 dim(adpkd)
 table(adpkd$EVENT)
 
-#-date de décès
+# bmi----
+
+table(adpkd$bmic)
+
+adpkd <- adpkd %>% 
+  mutate(bmic2 = case_when(
+    bmic == "1" | bmic == "2" ~ "1",
+    bmic == "3" ~ "2",
+    bmic == "4" ~ "3"
+  ))
+table(adpkd$bmic2)
+
+#-date de décès----
 
 table(adpkd$DDC.asd)
 # 2016-01-11
@@ -1579,7 +1591,7 @@ adpkd$deathdate <- as.numeric(paste(adpkd$year, adpkd$month2, adpkd$day2, sep = 
 str(adpkd$deathdate)
 adpkd$deathdate2 = ymd(adpkd$deathdate)
 
-# for ddirt
+# for ddirt----
 
 b <- ymd(adpkd$DDIRT.asd)
 adpkd$year3 <- year(b)
@@ -1643,3 +1655,109 @@ adpkd %>%
   group_by(EVENT) %>%
   summarise(mean = mean(timene), sd(timene), median(timene))
 
+# descriptif de la population totale----
+
+require(tableone)
+
+variables.s <- c("ttt2","tabac2", "sex", "age", 
+                 "L_ATC4.2", "DGN_PAL", "atcd", "EVENT", "groupes6",
+                 "TRANSP", "cardiovasc", "L_ATC4.g", 
+                 "apkd01", "diabetes", "bmic2", "time", "status")
+
+catvariables.s <- c("ttt2","tabac2", "sex", 
+                    "L_ATC4.2", "DGN_PAL", "atcd", "EVENT", "groupes6", 
+                    "TRANSP", "cardiovasc", "L_ATC4.g", 
+                    "apkd01", "diabetes", "bmic2", "status")
+
+adpkd.all <- CreateTableOne(vars = variables.s, 
+                              factorVars = catvariables.s,
+                              data = adpkd,
+                              includeNA = F)
+
+print(adpkd.all, showAllLevels = TRUE, quote = F, nospaces = TRUE)
+
+adpkd2all = CreateTableOne(vars = variables.s, data = adpkd, factorVars = catvariables.s, 
+                               test = F, includeNA = F, strata = "DEATH")
+print(adpkd2all, showAllLevels = TRUE, quote = F, noSpaces = TRUE)
+
+#-cox model for the whole population----
+
+require("survival")
+require("survminer")
+
+# tt2
+res.cox1 <- coxph(Surv(time, status) ~ ttt2, data = adpkd)
+test1 <- cox.zph(res.cox1)
+ggcoxzph(test1)
+summary(res.cox1)
+
+# tabac2
+res.cox2 <- coxph(Surv(time, status) ~ tabac2, data = adpkd)
+test2 <- cox.zph(res.cox2)
+summary(res.cox2)
+
+# sex
+res.cox3 <- coxph(Surv(time, status) ~ sex, data = adpkd)
+test3 <- cox.zph(res.cox3)
+summary(res.cox3)
+
+# age
+res.cox4 <- coxph(Surv(time, status) ~ age, data = adpkd)
+test4 <- cox.zph(res.cox4)
+#ggcoxfunctional(Surv(time, status) ~ age + log(age) + sqrt(age), data = adpkd.e)
+# nonlinearity
+summary(res.cox4)
+
+# DGN_PAL
+table(adpkd$DGN_PAL, useNA = "always")
+
+adpkd <- adpkd 
+
+
+res.cox5 <- coxph(Surv(time, as.numeric(status)) ~ diagnostic, data = adpkd.e)
+test5 <- cox.zph(res.cox5)
+#           chisq df    p
+#diagnostic  3.14  4 0.53
+#GLOBAL      3.14  4 0.53
+summary(res.cox5)
+
+require(rms)
+surv5 <- cph(Surv(as.numeric(time), as.numeric(status)) ~ diagnostic, data = adpkd.e, x = T, y = T)
+exp(coef(surv5))
+exp(confint(surv5))
+se <- predict(surv5, se.fit=TRUE)$se.fit 
+
+# atcd
+res.cox6 <- coxph(Surv(time, status) ~ atcd, data = adpkd)
+test6 <- cox.zph(res.cox6)
+summary(res.cox6)
+
+# TRANSP
+res.cox7 <- coxph(Surv(time, status) ~ TRANSP, data = adpkd)
+test7 <- cox.zph(res.cox7)
+summary(res.cox7)
+
+# cardiovasc
+res.cox8 <- coxph(Surv(time, status) ~ cardiovasc, data = adpkd)
+test8 <- cox.zph(res.cox8)
+summary(res.cox8)
+
+# L_ATC4.g
+res.cox9 <- coxph(Surv(time, status) ~ L_ATC4.g, data = adpkd)
+test9 <- cox.zph(res.cox9)
+summary(res.cox9)
+
+# diabetes 
+res.cox10 <- coxph(Surv(time, status) ~ diabetes, data = adpkd)
+test9 <- cox.zph(res.cox10)
+summary(res.cox10)
+
+# bmic
+res.cox112 <- coxph(Surv(time, status) ~ bmic2, data = adpkd)
+test112 <- cox.zph(res.cox112)
+summary(res.cox112)
+
+#-death survfit----
+
+km_fitD <- survfit(Surv(time, status) ~ EVENT, data = adpkd)
+plot(km_fitD)
