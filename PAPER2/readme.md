@@ -237,8 +237,11 @@ HR [95%CI] = 3.41 [2.11 ; 5.52]
 
 ## Décès 
 
+* Risque instantanée de décès en fonction des caractéristiques de la population ADPKD+
+
+
 |                       | Overall                         | DECES(-)    | DECES(+)   |       |
-| :--                 | :--                            | :--          | :--         | :-----    |
+| :----                 | :--                            | :--          | :--         | :-----    |
 |                       | N = 2 182                       | n = 1961    | n = 221     | HR [95%CI]  |
 | **Modalité de traitement** |                            |             |            | |         
 | DP                    | 289 (13.2)                      | 262 (13.4)  | 27 (12.2) | |
@@ -267,6 +270,9 @@ HR [95%CI] = 3.41 [2.11 ; 5.52]
 | Hémorragie intracérébrale (I61) | 16 (0.7)              | 8 (0.4) | 8 (3.6) | |
 | Infarctus intracérébral | 20 (0.9)                      | 14 (0.7) | 6 (2.7) | |
 | Accident vasculaire cérébral non précisé | 1 (0.0)      | 1 (0.1) | 0 (0.0) | |
+| **Diagnostic en deux modalités** |                      |         |         | |
+| Pas d'évènement | 
+| AVC (ischémique ou hémorragique) |
 | **Antécédents**       |                                 |             |               | |
 | Non                   | 2 027 (92.9)                    | 1 824 (93.0) | 202 (91.4) | |
 | Oui                   | 155 (7.1)                       | 12 (0.6) | 4 (1.8) | 1.17 [0.73 ; 1.90] |
@@ -292,3 +298,5 @@ HR [95%CI] = 3.41 [2.11 ; 5.52]
 | <25                   | 937 (48.2)                      | 835 (47.9) | 102 (51.5) | |
 | [25-30[               | 652 (33.6)                      | 579 (33.2) | 73 (36.9) | 1.05 [0.77 ; 1.42] |
 | ≥30                   | 354 (18.2)                      | 331 (19.0) | 23 (11.6) | 0.59 [0.38 ; 0.94] |
+
+![](death_byAVC.png)
