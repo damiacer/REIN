@@ -1,0 +1,185 @@
+---
+title: "paper2_v3"
+author: "damiano.cerasuolo @ unicaen.fr"
+format: html
+---
+
+### Variable âge
+
+| min | 1st qu. | median | mean | sd | 3rd qu. | max |
+| :-: | :-:     | :-:    | :-:  | :-:| :-:     | :-: |
+| 18.64 | 49.80 | 58.02 | 59.61 | 12.83 | 68.73 | 96.34 |
+
+##### Distribution en fonction de l'événement 
+
+| | No event | Event | 
+| :--- | :--- | :--- | 
+| Mean | 59.56 | 61.71 | 
+| SD | 12.83 | 12.19 | 
+| Median | 57.93 | 61.00 | 
+| Min | 18.64 | 37.62 | 
+| Max | 96.34 | 82.76 | 
+
+##### Variable _âge_ en deux modalités
+```
+adpkd$age2 = if_else(adpkd$age <= 58.02, "1", "2")
+```
+
+<br>
+
+---
+
+<br>
+
+### Variable diagnostic 
+
+| Type d'événement | n (%) | CIM-10 | _Modalité_ | 
+| :---             | :--   | :-     | -:         |
+| Ischémique       | 20 (1)   | I63    | _1 (réf)_  |
+| Hémorragique     | 20 (1)   | I60 + I61 | _2_     |
+| Aucun événement  | 2141 (98) | -        | _3_     |
+
+Exclus de cette analyse :
+
+* _G45_, AIT
+* _G46_, syndromes vasculaires 
+* _G81_, hémiplégie 
+* _I64_, ischémique ou hémorragique non spécifié
+
+<br>
+
+---
+
+<br>
+
+#### Analyse descriptive
+
+| |              |
+| :--- | :- |
+|  | N 2182 |
+| **Type de dialyse** | |
+| DP | 289 (13.2) | 
+| HD | 1893 (86.8) | 
+| **Tabagisme** | | 
+| Non | 1177 (62.3) | 
+| Oui | 713 (37.7) | 
+| **Sexe** | |
+| Homme | 1144 (52.4) | 
+| Femme | 1038 (47.6) |
+| **Age** | | 
+| ≤ 58 | 1091 (50.0) | 
+| > 58 | 1091 (50.0) | 
+| **Diagnostic** | | 
+| Ischémie (I63) | 20 (0.9) |
+| Hémorragie (I60 et 161) | 20 (0.9) | 
+| Aucun événement | 2141 (98.2) |
+| **Antécédents AVC** | | 
+| Non | 2027 (92.9) | 
+| Oui | 155 (7.1) | 
+| **Décès** | |
+| Pas décédé ou DM | 1976 (90.6) | 
+| I | 46 (2.1) |
+| III | 22 (1.0) | 
+| V | 32 (1.5) | 
+| VI | 106 (4.9) | 
+| **Transplantation** | |
+| Non | 1279 (58.6) | 
+| Oui | 903 (41.4) | 
+| **Antécédent cardiovasculaire** | |
+| Non | 1527 (73.3) | 
+| Oui | 555 (26.7) | 
+| **Traitement médicamenteux** | |
+| Anticoagulant| 532 (50.7) |
+| Antiplaquettaire | 517 (49.3) |
+| **Diabetes** | |
+| Non | 1975 (90.8) |
+| Oui | 200 (9.2) | 
+| **IMC** | |
+| < 25 | 937 (48.2) | 
+| [25-30[ | 652 (33.6) | 
+| ≥ 25 | 354 (18.2) |
+| **Décès** | |
+| Non | 1961 (89.9) |
+| Oui | 221 (10.1) | 
+
+### Analyse univariée 
+
+|               |   No AVC | AVC | HR [95%CI] | _p-value_ |
+| :--- | :-- | :-- | :-- | :-- |
+| | (n = 2141) | (n = 40) |  | |
+| **Type de dialyse** | | | | _0.98_ |
+| DP | 283 (13.2) | 5 (12.5) | ref. | |
+| HD |  1858 (86.8) | 35 (87.5) | 1.01 [0.39; 2.78] | |
+| **Tabagisme** | | | | _0.76_ |
+| Non | 1155 (62.2) | 21 (65.6) | ref. | |
+| Oui | 702 (37.8) | 11 (34.4) | 0.89 [0.43; 1.84] | |
+| **Sexe** | | | | _0.04_ |
+| Homme | 1117 (52.2) | 27 (67.5) | ref. | |
+| Femme | 1024 (47.8) | 13 (32.5) | 0.51 [0.26; 0.99] | |
+| **Age** | | | | _0.09_ |
+| ≤ 58 | 1075 (50.2) | 16 (40.0) | ref. | |
+| > 58 | 1066 (49.8) | 24 (60.0) | 1.60 [0.85; 3.02] | |
+| **Diagnostic** | | | | |
+| Ischémie (I63) | 0 (0.0) | 20 (50.0) | | |
+| Hémorragie (I60 et 161) |0 (0.0) | 20 (50.0) | | | 
+| Aucun événement | 2141 (100.0) | 0 (0.0) | | | 
+| **Antécédents AVC** | | | | _<0.001_ | 
+| Non | 1996 (93.2) | 30 (75.0) | ref. | |
+| Oui | 145 (6.8) | 10 (25.0) | 4.59 [2.24; 9.39] | |
+| **Décès** | | | | | 
+| Pas décédé ou DM | 1947 (90.9) | 28 (70.0) | | | 
+| I | 40 (1.9) |  6 (15.0) | | |
+| III | 21 (1.0) | 1 (2.5) | | |
+| V | 31 (1.4) | 1 (2.5)  | | |
+| VI | 102 (4.8) | 4 (10.0) | | |
+| **Transplantation** | | | | _0.010_ | 
+| Non | 1249 (58.3) | 29 (72.5) | ref. | |
+| Oui | 892 (41.7) | 11 (27.5) | 0.39 [0.20; 0.80] | | 
+| **Antécédent cardiovasculaire** | | | | _<0.001_ |
+| Non | 1509 (73.8) |  18 (48.6)  | ref. | |
+| Oui | 535 (26.2) | 19 (51.4) | 3.08 [1.61; 5.86] | |
+| **Traitement médicamenteux** | | | | _0.82_ | 
+| Anticoagulant| 517 (50.6) | 15 (53.6) | ref. | |
+| Antiplaquettaire | 504 (49.4) | 13 (46.4) | 0.92 [0.44; 1.94] | |
+| **Diabetes** |  | | | _0.77_ |
+| Non | 1937 (90.8) |  37 (92.5)  | ref. | |
+| Oui | 504 (49.4) | 13 (46.4)  | 0.83 [0.26; 2.71] | |
+| **IMC** | | | |  |
+| < 25 | 918 (48.1) | 18 (54.5) | ref. | |
+| [25-30[ | 643 (33.7) | 9 (27.3) | 0.72 [0.33; 1.62] | _0.44_ |
+| ≥ 25 | 348 (18.2) | 6 (18.2) | 0.89 [0.35; 2.23] | _0.79_ |
+| **Décès** | | | | 
+| Non | 1935 (90.4) | 25 (62.5) |
+| Oui | 206 (9.6) | 15 (37.5)  |
+
+<br>
+
+---
+
+<br>
+
+#### Décès et AVC
+Pearson's Chi-squared test with simulated p-value (based on 10000 replicates)\
+_p-value = <0.001_ \
+\
+**Conclusion** : le décès est plus fréquent chez les patients ayant eu un AVC. \
+
+<br>
+
+
+|     | Death (-) | Death (+)  | HR [95%CI] | _p-value_ |
+| :-- | :-- | :-- |  :-- | --: |
+|     |     |     |      | _<0.001_  |
+| Ischémie (I63) | 14 | 6 | ref. | |
+| Hémorragie (I60 et I61) | 11 | 9 | 1.35 [0.48; 3.80] | |
+| Aucun | 1935 | 206 | 0.17 [0.07; 0.37] | |
+| _DM_ | _1_ | _0_ | | |
+
+<br>
+
+##### Time (days) to death by event 
+
+|        | mean          |   sd | median | min   | max |
+| :--     | :---:        | :---:    | :---:    | :---:    | :---: |
+| No AVC | 627.0825 | 464 | 517.5 | 0 | 1734 |
+| AVC | 643.2000  | 437 | 610.0 | 89 | 1736 |     
