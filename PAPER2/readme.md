@@ -1,8 +1,6 @@
----
-title: "paper2_v3"
-author: "damiano.cerasuolo @ unicaen.fr"
-format: html
----
+## Analysis 1 (G45 excl)
+
+<br>
 
 ### Variable âge
 
@@ -190,7 +188,7 @@ _p-value = <0.001_ \
 
 ---
 
----
+## Analyis 2 (G45 incl) 
 
 <br>
 
