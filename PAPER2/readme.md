@@ -188,6 +188,9 @@ _p-value = <0.001_ \
 
 ## Analyis 2 (G45 incl) 
 
+![](flowchart2.png)
+
+
 ### Variable diagnostic 
 
 | Type d'événement | n (%) | CIM-10 | _Modalité_ | 
