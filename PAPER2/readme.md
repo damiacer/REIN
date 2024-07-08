@@ -1,7 +1,5 @@
 ## Analysis 1 (G45 excl)
 
-<br>
-
 ### Variable âge
 
 | min | 1st qu. | median | mean | sd | 3rd qu. | max |
@@ -189,8 +187,6 @@ _p-value = <0.001_ \
 ---
 
 ## Analyis 2 (G45 incl) 
-
-<br>
 
 ### Variable diagnostic 
 
